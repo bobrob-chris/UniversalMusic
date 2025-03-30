@@ -1,0 +1,4 @@
+C:/Users/chris/OneDrive/Documents/Code/UniversalMusic/build/CMakeFiles/unimusic.dir
+C:/Users/chris/OneDrive/Documents/Code/UniversalMusic/build/CMakeFiles/RUN_TESTS.dir
+C:/Users/chris/OneDrive/Documents/Code/UniversalMusic/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/chris/OneDrive/Documents/Code/UniversalMusic/build/CMakeFiles/ZERO_CHECK.dir

@@ -26,14 +26,14 @@ class Song {
     string artist;
 
    
-    static IdType numSongs;
+    //static IdType numSongs;
 
     //Gurantee a unique id for each song
-    static IdType idGenerator();
+    //static IdType idGenerator();
 
     public:
         //CONSTRUCTORS
-        Song(const string &n, const string &a): name(n), artist(a){id = idGenerator();}
+        Song(const string &n, const string &a): name(n), artist(a){id = 0;}
 
         Song(const Song &other);
 

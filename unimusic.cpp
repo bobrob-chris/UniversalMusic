@@ -1,5 +1,5 @@
 #include <iostream>
-#include "song.cpp"
+#include "song.h"
 
 // design
 
@@ -53,5 +53,6 @@ using namespace UniMusic;
 using std::cout;
 using std::endl;
 
-int main(int, char**){
+int main(){
+    cout << "Hello, World!" << endl;
 }
