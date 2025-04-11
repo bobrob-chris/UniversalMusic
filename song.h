@@ -8,10 +8,9 @@ typedef unsigned long IdType;
 // Using UniMusic as the namespace for this project
 // do I need a standard namespace for this project?
 // TODO - reseach if I need a namespace
-namespace UniMusic {
-
 using std::string, std::list;
 
+namespace UniMusic {
 
 // Basic data structure to represent the very basic unit of the project
 // The Song
@@ -46,6 +45,6 @@ class Song {
 };
 
 
-};
+}
 
 #endif

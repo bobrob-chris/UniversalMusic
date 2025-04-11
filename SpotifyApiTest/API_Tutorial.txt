@@ -1,0 +1,145 @@
+id
+8d3f4f0f52a3462dab3793c04eabcf50
+
+secret
+cdc52ba00539475a9f4e291fb0666626
+
+
+curl -X POST "https://accounts.spotify.com/api/token" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "grant_type=client_credentials&client_id=your-client-id&client_secret=your-client-secret"
+
+
+curl -X POST "https://accounts.spotify.com/api/token" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "grant_type=client_credentials&client_id=8d3f4f0f52a3462dab3793c04eabcf50&client_secret=cdc52ba00539475a9f4e291fb0666626"
+
+
+curl "https://accounts.spotify.com/api/token" -Method Post -ContentType "application/x-www-form-urlencoded" -Body "grant_type=client_credentials&client_id=8d3f4f0f52a3462dab3793c04eabcf50&client_secret=cdc52ba00539475a9f4e291fb0666626"
+
+
+NAME
+    Invoke-WebRequest
+
+SYNTAX
+    Invoke-WebRequest [-Uri] <uri> [-UseBasicParsing] [-WebSession <WebRequestSession>] [-SessionVariable <string>]
+    [-Credential <pscredential>] [-UseDefaultCredentials] [-CertificateThumbprint <string>] [-Certificate
+    <X509Certificate>] [-UserAgent <string>] [-DisableKeepAlive] [-TimeoutSec <int>] [-Headers <IDictionary>]
+    [-MaximumRedirection <int>] [-Method {Default | Get | Head | Post | Put | Delete | Trace | Options | Merge |
+    Patch}] [-Proxy <uri>] [-ProxyCredential <pscredential>] [-ProxyUseDefaultCredentials] [-Body <Object>]
+    [-ContentType <string>] [-TransferEncoding {chunked | compress | deflate | gzip | identity}] [-InFile <string>]
+    [-OutFile <string>] [-PassThru]  [<CommonParameters>]
+
+
+^^^^^^^^^^^^^^^
+Scratch
+
+that last curl request works though
+its used to get an access token
+
+the response was this
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : {"access_token":"BQDokrgYbffLjfNIMve2fi6TIsJxoq93dZTCdXjXRBSp4WzXSQer8eYiyE19kU1FJ8ypiw95FDKj-NUmNm
+                    zbE1stKISsWDpIAoTcze3FgXQuGXwkPaC8B6DDPLTdXDmukoeAP5A4xO4","token_type":"Bearer","expires_in":3600}
+RawContent        : HTTP/1.1 200 OK
+                    Content-Length: 198
+                    Content-Type: application/json
+                    Date: Tue, 01 Apr 2025 03:19:32 GMT
+                    Set-Cookie: __Host-device_id=AQCAH_Xd16CbTXOzoW-k6NTyzNSpdDl4KkaVN8S-17b-vyLe7_CASpN2cj7-zZYV...
+Forms             : {}
+Headers           : {[Content-Length, 198], [Content-Type, application/json], [Date, Tue, 01 Apr 2025 03:19:32 GMT],
+                    [Set-Cookie, __Host-device_id=AQCAH_Xd16CbTXOzoW-k6NTyzNSpdDl4KkaVN8S-17b-vyLe7_CASpN2cj7-zZYV_7RKP
+                    K1_vpfxZcpl6Gwgu3aHyYnE-kKt44c;Version=1;Path=/;Max-Age=2147483647;Secure;HttpOnly;SameSite=Lax,sp_
+                    tr=false;Version=1;Domain=accounts.spotify.com;Path=/;Secure;SameSite=Lax]...}
+Images            : {}
+InputFields       : {}
+Links             : {}
+ParsedHtml        : mshtml.HTMLDocumentClass
+RawContentLength  : 198
+
+
+
+so I'm assuming access token is "BQDokrgYbffLjfNIMve2fi6TIsJxoq93dZTCdXjXRBSp4WzXSQer8eYiyE19kU1FJ8ypiw95FDKj-NUmNm
+                    zbE1stKISsWDpIAoTcze3FgXQuGXwkPaC8B6DDPLTdXDmukoeAP5A4xO4"
+
+which lasts for 1 hour
+
+
+
+now, 
+
+using the reference data for web api, we can get something like this
+
+"""""""
+
+
+curl "https://api.spotify.com/v1/artists/4Z8W4fKeB5YxbusRsdQVPb" -H "Authorization: Bearer  BQDBKJ5eo5jxbtpWjVOj7ryS84khybFpP_lTqzV7uV-T_m0cTfwvdn5BnBSKPxKgEb11"
+
+"""""""
+
+
+apparently... side note, curl is aliased to Invoke-WebRequest in windows powershell
+so...
+Invoke-WebRequest -Uri "<uri goes here>" -Method Post -Headers @{ Authorization = 'Bearer ...' } -UseBasicParsing
+
+
+is what I want to do, so converting that over,
+
+curl "https://api.spotify.com/v1/artists/4Z8W4fKeB5YxbusRsdQVPb" -Headers @{ Authorization = 'Bearer  BQDBKJ5eo5jxbtpWjVOj7ryS84khybFpP_lTqzV7uV-T_m0cTfwvdn5BnBSKPxKgEb11' } -UseBasicParsing
+
+
+
+curl "https://api.spotify.com/v1/artists/4Z8W4fKeB5YxbusRsdQVPb" -Headers @{ Authorization = 'Bearer  BQBpJJhu2xPhIsEO2p-gwiDNFA0YlrBdCoSMiHvQm6ztuRXfNTdlQbm2uULZ1a0qPxY839iVD-363slT8r
+                    xEpc1risx-yIPTjTQxmwce2KKILO1tVuYbFbhTdlVfiXJ16sDm3B5hcXY' } -UseBasicParsing
+
+And after remembering to substitute my own access token, it works like a charm!!!!
+
+Also access token seems to be reusable which is LOVELY
+
+
+now trying to access my profile
+
+
+curl "https://api.spotify.com/v1/me" -Headers @{ Authorization = 'Bearer  BQBpJJhu2xPhIsEO2p-gwiDNFA0YlrBdCoSMiHvQm6ztuRXfNTdlQbm2uULZ1a0qPxY839iVD-363slT8r
+                    xEpc1risx-yIPTjTQxmwce2KKILO1tVuYbFbhTdlVfiXJ16sDm3B5hcXY' } -UseBasicParsing
+
+
+hold on, trying new access token
+BQCmcpywzCQPBt-YNjCfZg7_erqVHlu8Z3YdDzrlFii5SArMAqFy6vA8aTOy4aZpZ8A_LbzgyXsld7n2D05phtXyaDz6gvIusbBQ-xwS33Elk7CKS9cd-3pucP2aQJkd2mAIU8KhPus
+^^^^^^^^
+this one
+now 
+
+curl "https://api.spotify.com/v1/me" -Headers @{ Authorization = 'Bearer  BQCmcpywzCQPBt-YNjCfZg7_erqVHlu8Z3YdDzrlFii5SArMAqFy6vA8aTOy4aZpZ8A_LbzgyXsld7n2D05phtXyaDz6gvIusbBQ-xwS33Elk7CKS9cd-3pucP2aQJkd2mAIU8KhPus' } -UseBasicParsing
+
+
+
+
+
+lets try accessing my playlist
+will definitely have to make all my playlists public for this
+
+https://open.spotify.com/playlist/3wwGdfUSREap8DgIJMbSCA <--- This one
+
+generated curl request:
+curl --request GET \
+  --url https://api.spotify.com/v1/playlists/3wwGdfUSREap8DgIJMbSCA \
+  --header 'Authorization: Bearer 1POdFZRZbvb...qqillRxMr2z'
+
+converting it over
+
+Invoke-WebRequest -Uri "https://api.spotify.com/v1/playlists/3wwGdfUSREap8DgIJMbSCA" -Method Get -Headers @{ Authorization = 'Bearer BQCmcpywzCQPBt-YNjCfZg7_erqVHlu8Z3YdDzrlFii5SArMAqFy6vA8aTOy4aZpZ8A_LbzgyXsld7n2D05phtXyaDz6gvIusbBQ-xwS33Elk7CKS9cd-3pucP2aQJkd2mAIU8KhPus' } -UseBasicParsing
+
+k that worked, now putting it in a file
+and I'm going to view it
+
+k wasn't super verbose but this is progress, calling it quits for tonight (3/31/2025)
+
+
+
+
+
+
+

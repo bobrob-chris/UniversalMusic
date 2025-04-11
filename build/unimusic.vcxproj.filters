@@ -7,6 +7,12 @@
     <ClCompile Include="C:\Users\chris\OneDrive\Documents\Code\UniversalMusic\song.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\chris\OneDrive\Documents\Code\UniversalMusic\network.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\chris\OneDrive\Documents\Code\UniversalMusic\commandhp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\chris\OneDrive\Documents\Code\UniversalMusic\CMakeLists.txt" />
