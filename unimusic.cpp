@@ -54,6 +54,8 @@
 using std::cout;
 using std::endl;
 
+void testNetwork();
+void testCommandHP();
 
 
 int main(){
@@ -86,6 +88,10 @@ void testNetwork() {
 }
 
 void testCommandHP(){
+    string output = string();
+    map<string,string> m =  map<string, string>();
+    m.insert({"Content-Type","application/x-www-form-urlencoded"});
     UniMusic::CommandHP p = UniMusic::CommandHP();
-    p.sendRequest("hello",std::map<string,string>(), UniMusic::Get);
+    int result = p.sendRequest("https://accounts.spotify.com/api/token", m, UniMusic::Post, "grant_type=client_credentials&client_id=8d3f4f0f52a3462dab3793c04eabcf50&client_secret=cdc52ba00539475a9f4e291fb0666626", &output);
+    cout << output << endl;
 }

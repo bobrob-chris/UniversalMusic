@@ -10,13 +10,35 @@
 
 using UniMusic::Method;
 
-int UniMusic::CommandHP::sendRequest(string url, map<string, string> headers, Method method, string body = nullptr) {
-    std::cout << exec("curl \"https://accounts.spotify.com/api/token\" -Method Post -ContentType \"application/x-www-form-urlencoded\" -Body \"grant_type=client_credentials&client_id=8d3f4f0f52a3462dab3793c04eabcf50&client_secret=cdc52ba00539475a9f4e291fb0666626\"") << std::endl;
+std::string exec(const char* cmd);
+
+
+int UniMusic::CommandHP::sendRequest(string url, map<string, string> headers, Method method, string body, string *output) {
+    string command("curl ");
+    if (method == Post){
+        command += "-X POST ";
+    } else {
+        command += "-X GET ";
+    }
+    command += "\""+url+"\" ";
+    string headersString();
+    for (auto const& [header, content] : headers) {
+        command += "-H \"" + header + ": " + content + "\" ";
+    }
+    command += " -d \"" + body + "\" "; 
+
+    
+    try {
+        //TODO = I don't know if string is saved in scope or not, look that up
+        *output = string(exec(command.c_str()));
+    } catch (std::runtime_error error) {
+        return 1;
+    }
+
 }
 
-
+//TODO - understand this function
 //https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
-
 std::string exec(const char* cmd) {
     std::array<char, 128> buffer;
     std::string result;
