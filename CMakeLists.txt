@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 enable_testing()
 
-add_executable(unimusic unimusic.cpp song.cpp network.cpp commandhp.cpp)
+add_executable(unimusic unimusic.cpp song.cpp network.cpp commandhp.cpp spotifyinterface.cpp)
 
 if(WIN32)
   target_link_libraries(unimusic wsock32 ws2_32)

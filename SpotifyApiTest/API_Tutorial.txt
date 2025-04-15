@@ -130,7 +130,7 @@ curl --request GET \
 
 converting it over
 
-Invoke-WebRequest -Uri "https://api.spotify.com/v1/playlists/3wwGdfUSREap8DgIJMbSCA" -Method Get -Headers @{ Authorization = 'Bearer BQCmcpywzCQPBt-YNjCfZg7_erqVHlu8Z3YdDzrlFii5SArMAqFy6vA8aTOy4aZpZ8A_LbzgyXsld7n2D05phtXyaDz6gvIusbBQ-xwS33Elk7CKS9cd-3pucP2aQJkd2mAIU8KhPus' } -UseBasicParsing
+Invoke-WebRequest -Uri "https://api.spotify.com/v1/playlists/3wwGdfUSREap8DgIJMbSCA" -Method Get -Headers @{ Authorization = 'Bearer BQCmV_ExMOv02-pdM_R6wPeQ7ft0s-Hh6y2WjaKFkVXUIRTcsSsCx8kM_yneA1Zj65A74MLgtcYg3eOq9aFHllM-A2ru8m7PuVNxkymZkcx4yS1a7HUnjZuY8NdQQ3hei-pQIdBWc-I' } -UseBasicParsing
 
 k that worked, now putting it in a file
 and I'm going to view it
@@ -140,6 +140,9 @@ k wasn't super verbose but this is progress, calling it quits for tonight (3/31/
 
 
 
+
+
+BQCmV_ExMOv02-pdM_R6wPeQ7ft0s-Hh6y2WjaKFkVXUIRTcsSsCx8kM_yneA1Zj65A74MLgtcYg3eOq9aFHllM-A2ru8m7PuVNxkymZkcx4yS1a7HUnjZuY8NdQQ3hei-pQIdBWc-I
 
 
 

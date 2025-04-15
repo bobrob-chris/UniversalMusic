@@ -2,6 +2,7 @@
 #include "song.h"
 #include "network.h"
 #include "htmlparser.h"
+#include "spotifyinterface.h"
 
 // design
 
@@ -56,11 +57,14 @@ using std::endl;
 
 void testNetwork();
 void testCommandHP();
+void testSpotifyInterface();
 
 
 int main(){
     //testNetwork();
-    testCommandHP();
+    //testCommandHP();
+    testSpotifyInterface();
+
 }
 
 void testNetwork() {
@@ -94,4 +98,15 @@ void testCommandHP(){
     UniMusic::CommandHP p = UniMusic::CommandHP();
     int result = p.sendRequest("https://accounts.spotify.com/api/token", m, UniMusic::Post, "grant_type=client_credentials&client_id=8d3f4f0f52a3462dab3793c04eabcf50&client_secret=cdc52ba00539475a9f4e291fb0666626", &output);
     cout << output << endl;
+    
+
+}
+
+void testSpotifyInterface() {
+    string clientId = string("8d3f4f0f52a3462dab3793c04eabcf50"); //TODO - yeah this is definitely problematic being hardcoded
+    string clientSecret = string("cdc52ba00539475a9f4e291fb0666626");
+    UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(clientId, clientSecret);
+    cout << "Access Token: " << s.getAccessToken() << endl;
+
+    cout << "Playlist fetching example: " << s.getPlaylist("3wwGdfUSREap8DgIJMbSCA") << endl;
 }

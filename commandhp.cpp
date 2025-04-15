@@ -21,16 +21,15 @@ int UniMusic::CommandHP::sendRequest(string url, map<string, string> headers, Me
         command += "-X GET ";
     }
     command += "\""+url+"\" ";
-    string headersString();
     for (auto const& [header, content] : headers) {
         command += "-H \"" + header + ": " + content + "\" ";
     }
-    command += " -d \"" + body + "\" "; 
+    command += " -d \"" + body + "\" -s"; 
 
-    
     try {
-        //TODO = I don't know if string is saved in scope or not, look that up
-        *output = string(exec(command.c_str()));
+    
+       *output = string(exec(command.c_str()));
+        return 0;
     } catch (std::runtime_error error) {
         return 1;
     }

@@ -15,14 +15,14 @@ enum Method {
 
 // just an interface to be implemented later
 class HTMLParser{
-    public:
+    public: 
         virtual int sendRequest(string url, map<string, string> headers, Method method, string body, string *output) = 0;
 
 };
 
 class CommandHP: public HTMLParser {
     public:
-        int sendRequest(string url, map<string,string> headers, Method method, string body, string *output);
+     int sendRequest(string url, map<string,string> headers, Method method, string body, string *output);
 };
 
 
