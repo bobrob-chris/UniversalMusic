@@ -2,29 +2,9 @@
 #define _SPOTIFYINTERFACE_H_
 #include "htmlparser.h"
 #include <string>
-
+#include <memory>
 
 namespace UniMusic {
-
-struct songNode {
-    string id; //prolly name/artist
-    std::unique_ptr<songNode> next;
-    songNode(string _id) {id = _id; next = nullptr;}
-    ~songNode() = default;
-};
-
-struct playlistBuilder {
-    std::unique_ptr<songNode> song;
-    //Honestly for the constrctor, I'll just have it as an object
-    //Don't have to worry about a destructor because of smart pointers
-    playlistBuilder() {song = std::unique_ptr<songNode>(new songNode("NULL"));}
-
-    bool hasNext() {return song->id == "NULL";} // Damn janky this is, but I don't want to fix it right now
-    // TODO - make this entire idea less janky
-    void next() {std::unique_ptr<songNode> a = std::move(song->next); song = std::move(a);} //increments to next one
-    string get() {return song->id;}//returns them in song - artist (at least for now)
-                    //will err if doesn't have any more
-};
 
 class SpotifyInterface {
     private:
@@ -43,7 +23,7 @@ class SpotifyInterface {
 
         string &getAccessToken(){return accessToken;};
 
-        playlistBuilder getPlaylist(string playlistId);
+        string getPlaylist(string playlistId);
 
         string getSong(string songId);
 

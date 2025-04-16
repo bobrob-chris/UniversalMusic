@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "song.h"
 #include "network.h"
 #include "htmlparser.h"
@@ -122,13 +123,9 @@ void run() {
     string playlist;
    // std::cin >> "Enter playlist id: " >> playlist;
     playlist = "3wwGdfUSREap8DgIJMbSCA";
-    UniMusic::playlistBuilder output = s.getPlaylist(playlist);
+    string output = s.getPlaylist(playlist);
 
-    int i = 4;
-    while (i > 0 && output.hasNext()) {
-        cout << output.get() << endl;
-        i--; output.next();
-    }
+    cout << output << endl;
 
 }
 

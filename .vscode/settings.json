@@ -55,6 +55,10 @@
         "sstream": "cpp",
         "string": "cpp",
         "vector": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "deque": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "stack": "cpp"
     }
 }
