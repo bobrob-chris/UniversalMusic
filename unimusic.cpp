@@ -58,13 +58,14 @@ using std::endl;
 void testNetwork();
 void testCommandHP();
 void testSpotifyInterface();
+void run();
 
 
 int main(){
     //testNetwork();
     //testCommandHP();
-    testSpotifyInterface();
-
+    //testSpotifyInterface();
+    run();
 }
 
 void testNetwork() {
@@ -102,11 +103,32 @@ void testCommandHP(){
 
 }
 
+//Test deprecated since introduction of playlist builder
 void testSpotifyInterface() {
     string clientId = string("8d3f4f0f52a3462dab3793c04eabcf50"); //TODO - yeah this is definitely problematic being hardcoded
     string clientSecret = string("cdc52ba00539475a9f4e291fb0666626");
     UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(clientId, clientSecret);
-    cout << "Access Token: " << s.getAccessToken() << endl;
+    //cout << "Access Token: " << s.getAccessToken() << endl;
 
-    cout << "Playlist fetching example: " << s.getPlaylist("3wwGdfUSREap8DgIJMbSCA") << endl;
+    //cout << "Playlist fetching example: " << s.getPlaylist("3wwGdfUSREap8DgIJMbSCA") << endl;
+    //This works 
 }
+
+void run() {
+    string clientId = string("8d3f4f0f52a3462dab3793c04eabcf50"); //TODO - yeah this is definitely problematic being hardcoded
+    string clientSecret = string("cdc52ba00539475a9f4e291fb0666626");
+    UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(clientId, clientSecret);
+
+    string playlist;
+   // std::cin >> "Enter playlist id: " >> playlist;
+    playlist = "3wwGdfUSREap8DgIJMbSCA";
+    UniMusic::playlistBuilder output = s.getPlaylist(playlist);
+
+    int i = 4;
+    while (i > 0 && output.hasNext()) {
+        cout << output.get() << endl;
+        i--; output.next();
+    }
+
+}
+

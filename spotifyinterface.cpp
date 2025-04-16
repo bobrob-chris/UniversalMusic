@@ -4,6 +4,7 @@
 
 
 string findToken(const string &input, const string &identifier);
+UniMusic::songNode generatePlaylistTerminator() {return UniMusic::songNode("NULL");}
 
 UniMusic::SpotifyInterface::SpotifyInterface(string clientId, string clientSecret){
     curlWrapper = CommandHP();
@@ -27,15 +28,27 @@ void UniMusic::SpotifyInterface::generateAccessToken(){
     //TODO - check if result is not zero;
     
     accessToken = findToken(output, "access_token");
+    std::cout << "accessToken: " << accessToken << std::endl;
 
 }
 
-string UniMusic::SpotifyInterface::getPlaylist(string playlistId) {
+UniMusic::playlistBuilder UniMusic::SpotifyInterface::getPlaylist(string playlistId) {
     string output = string();
     map<string,string> m = map<string, string>();
     m.insert({"Authorization","Bearer "+accessToken});
     int result = curlWrapper.sendRequest("https://api.spotify.com/v1/playlists/"+playlistId, m, UniMusic::Get, string(), &output);
-    return string(output);
+
+    std::cout << "Total: " <<findToken(output, "total") << std::endl;
+
+    return playlistBuilder();
+}
+
+
+string UniMusic::SpotifyInterface::getSong(string songId) {
+    string output = string();
+    map<string,string> m = map<string, string>();
+    m.insert({"Authorization","Bearer "+accessToken});
+    return "NOT DONE"; //TODO - ...
 }
 
 string findToken(const string &input, const string &identifer) {
@@ -45,8 +58,8 @@ string findToken(const string &input, const string &identifer) {
     size_t a,b,c;
 
     a = input.find(identifer);
-    b = input.find(":",a)+2;
-    c = input.find("\"", b);
+    b = input.find(":",a)+1;
+    c = input.find(",", b);
 
     return input.substr(b,c-b);
 }
