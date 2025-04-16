@@ -5,7 +5,10 @@
 #include "htmlparser.h"
 #include "spotifyinterface.h"
 
-// design
+// security so I don't have things on github
+#include "HIDDEN.h"
+
+
 
 //song.cc
 //song.h
@@ -83,7 +86,8 @@ void testNetwork() {
                     "Content-Type: application/x-www-form-urlencoded\r\n"
                     "Content-Length: 119\r\n"
                     "          \r\n"
-                    "grant_type=client_credentials&client_id=8d3f4f0f52a3462dab3793c04eabcf50&client_secret=cdc52ba00539475a9f4e291fb0666626\r\n\r\n";
+                    "grant_type=client_credentials&client_id="+HIDDEN_SPOTIFY_CLIENT_ID+"&"
+                    "client_secret="+HIDDEN_SPOTIFY_CLIENT_SECRET+"\r\n\r\n";
 
 
 
@@ -98,7 +102,7 @@ void testCommandHP(){
     map<string,string> m =  map<string, string>();
     m.insert({"Content-Type","application/x-www-form-urlencoded"});
     UniMusic::CommandHP p = UniMusic::CommandHP();
-    int result = p.sendRequest("https://accounts.spotify.com/api/token", m, UniMusic::Post, "grant_type=client_credentials&client_id=8d3f4f0f52a3462dab3793c04eabcf50&client_secret=cdc52ba00539475a9f4e291fb0666626", &output);
+    int result = p.sendRequest("https://accounts.spotify.com/api/token", m, UniMusic::Post, "grant_type=client_credentials&client_id="+HIDDEN_SPOTIFY_CLIENT_ID+"&client_secret="+HIDDEN_SPOTIFY_CLIENT_SECRET, &output);
     cout << output << endl;
     
 
@@ -106,9 +110,7 @@ void testCommandHP(){
 
 //Test deprecated since introduction of playlist builder
 void testSpotifyInterface() {
-    string clientId = string("8d3f4f0f52a3462dab3793c04eabcf50"); //TODO - yeah this is definitely problematic being hardcoded
-    string clientSecret = string("cdc52ba00539475a9f4e291fb0666626");
-    UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(clientId, clientSecret);
+    UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(HIDDEN_SPOTIFY_CLIENT_ID, HIDDEN_SPOTIFY_CLIENT_SECRET);
     //cout << "Access Token: " << s.getAccessToken() << endl;
 
     //cout << "Playlist fetching example: " << s.getPlaylist("3wwGdfUSREap8DgIJMbSCA") << endl;
@@ -116,13 +118,11 @@ void testSpotifyInterface() {
 }
 
 void run() {
-    string clientId = string("8d3f4f0f52a3462dab3793c04eabcf50"); //TODO - yeah this is definitely problematic being hardcoded
-    string clientSecret = string("cdc52ba00539475a9f4e291fb0666626");
-    UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(clientId, clientSecret);
+    UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(HIDDEN_SPOTIFY_CLIENT_ID, HIDDEN_SPOTIFY_CLIENT_SECRET);
 
     string playlist;
    // std::cin >> "Enter playlist id: " >> playlist;
-    playlist = "3wwGdfUSREap8DgIJMbSCA";
+    playlist = HIDDEN_MY_PLAYLIST_ID;
     string output = s.getPlaylist(playlist);
 
     cout << output << endl;

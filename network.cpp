@@ -155,7 +155,6 @@ int UniMusic::socketTest()
 {
     // a couple of hardecoded values
     // for testing purposes
-    //curl "https://accounts.spotify.com/api/token" -Method Post -ContentType "application/x-www-form-urlencoded" -Body "grant_type=client_credentials&client_id=8d3f4f0f52a3462dab3793c04eabcf50&client_secret=cdc52ba00539475a9f4e291fb0666626"
 
 
 
