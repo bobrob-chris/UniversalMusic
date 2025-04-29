@@ -23,7 +23,7 @@ class SpotifyInterface {
 
         string &getAccessToken(){return accessToken;};
 
-        string getPlaylist(string playlistId);
+        string getPlaylist(string playlistId); //TODO - implemnt a version of this that returns a vector instead of a string (might not be needed, we'll see).
 
         string getSong(string songId);
 

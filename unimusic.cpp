@@ -1,5 +1,9 @@
 #include <iostream>
 #include <fstream>
+
+#include <vector>
+#include <ctime>
+
 #include "song.h"
 #include "network.h"
 #include "htmlparser.h"
@@ -64,8 +68,6 @@ I've got Tina working on the front end, (gonna have to give her a more detailed 
 
 But I got to figure out what "Essential Functions" I need
 
-I think 
-
 */
 
 
@@ -73,18 +75,46 @@ I think
 using std::cout;
 using std::endl;
 
+
+//Function declarations for tests
 void testNetwork();
 void testCommandHP();
 void testSpotifyInterface();
-void run();
+void testSaveFile();
+void testSavePlaylist();
 
+void testSuite();
+
+
+//Function declarations for actual usable functions for final product
+//________________
+
+//Pretty self explanatory, but important note is it will also
+//Include a time as the first line in the file which will be the date the file is written
+//Otherwise, everything in the file will be of format "[name]"-"[artist]"
+void savePlaylist(string playlistid, string filename);
+
+//Returns a playlist given a filename, with each entry in the returned vector being
+//"[name]"-"[artist]". Additionally if date is supplied 
+std::vector<string> readPlaylist(string filename, time_t *date);
+
+//Todo - write function and also write documenation for 
+void updatePlaylist();
 
 int main(){
+    testSuite();
+
+}
+
+void testSuite() {
+
     //testNetwork();
     //testCommandHP();
     //testSpotifyInterface();
-    run();
+    //testSaveFile();
+    testSavePlaylist();
 }
+
 
 void testNetwork() {
     //int result = socketTest();
@@ -131,15 +161,72 @@ void testSpotifyInterface() {
     //This works 
 }
 
-void run() {
+void testSaveFile() {
     UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(HIDDEN_SPOTIFY_CLIENT_ID, HIDDEN_SPOTIFY_CLIENT_SECRET);
 
-    string playlist;
-   // std::cin >> "Enter playlist id: " >> playlist;
-    playlist = HIDDEN_MY_PLAYLIST_ID;
-    string output = s.getPlaylist(playlist);
+    string playlist = HIDDEN_MY_PLAYLIST_ID;
 
-    cout << output << endl;
+    std::ofstream output("playlist_test.txt");
+
+    output << s.getPlaylist(playlist);
+
+    output.close();
 
 }
+
+
+void testSavePlaylist(){
+    string playlist = HIDDEN_MY_PLAYLIST_ID;
+
+    string playlistName = "playlist_test.txt";
+
+    savePlaylist(playlist, playlistName);
+
+    std::vector<string> list = readPlaylist(playlistName, nullptr);
+
+    for (string song: list) {
+        cout << song << endl;
+    }
+}
+
+//TODO implement time and date functionality
+
+void savePlaylist(string playlistid, string filename){
+    //TODO - maybe put in some error handelling 
+    UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(HIDDEN_SPOTIFY_CLIENT_ID, HIDDEN_SPOTIFY_CLIENT_SECRET);
+
+
+    std::ofstream output(filename);
+
+    //time_t timestamp;
+    //time(&timestamp);
+
+    //output << timestamp << endl;
+    output << "PLACEHOLDER" << endl;
+
+    output << s.getPlaylist(playlistid);
+
+    output.close();
+}
+
+std::vector<string> readPlaylist(string filename, time_t *date){
+    //TODO - error checking
+    string line;
+    std::ifstream inputFile(filename);
+
+    std::vector<string> v;
+
+    //First line - ignore for now until you get time working
+
+    //getline(inputFile, line);
+    //*date = mktime(line); 
+    getline(inputFile, line); //discard first line, should be "PLACEHOLDER"
+
+    while (getline (inputFile, line)) {
+        v.push_back(line);
+    }
+    return v;
+
+}
+
 
