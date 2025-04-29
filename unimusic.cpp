@@ -6,7 +6,7 @@
 #include "spotifyinterface.h"
 
 // security so I don't have things on github
-#include "HIDDEN.h"
+#include "config.h"
 
 
 
@@ -54,6 +54,20 @@
 
 //finally the necessary 
 //goes through spotify and makes a list of everything you need
+
+//##############################
+/*
+4/28/25
+
+I'm going to actually need to bring this alltogether at some point.
+I've got Tina working on the front end, (gonna have to give her a more detailed design for that tmw)
+
+But I got to figure out what "Essential Functions" I need
+
+I think 
+
+*/
+
 
 
 using std::cout;

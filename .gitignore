@@ -12,7 +12,7 @@ _deps
 CMakeUserPresets.json
 build/
 Notes/
-HIDDEN.h
+config.h
 
 .vscode/*
 !.vscode/settings.json
@@ -26,3 +26,5 @@ HIDDEN.h
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+*.jpg
