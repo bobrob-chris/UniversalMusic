@@ -8,6 +8,7 @@
 #include "network.h"
 #include "htmlparser.h"
 #include "spotifyinterface.h"
+#include "youtubeinterface.h"
 
 // security so I don't have things on github
 #include "config.h"
@@ -92,6 +93,7 @@ void testSpotifyInterface();
 void testSaveFile();
 void testSavePlaylist();
 void testDelimiterAndQuotationRemover();
+void testYoutubeInterface();
 
 void testSuite();
 
@@ -149,6 +151,7 @@ void testSuite() {
     //testSaveFile();
     //testSavePlaylist();
     //testDelimiterAndQuotationRemover();
+    testYoutubeInterface();
 }
 
 
@@ -302,5 +305,7 @@ string removeQuotation(string &input) {
 }
 
 
-
+void testYoutubeInterface() {
+    UniMusic::YoutubeInterface::openUrl(string("waaah"));
+}
 
