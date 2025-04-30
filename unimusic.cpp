@@ -157,7 +157,7 @@ void testSuite() {
     //testSavePlaylist();
     //testDelimiterAndQuotationRemover();
     //testYoutubeURLGet();
-    testYoutubeURLSearch;
+    testYoutubeURLSearch();
     
 }
 
@@ -224,11 +224,11 @@ void testSaveFile() {
 void testSavePlaylist(){
     string playlist = HIDDEN_MY_PLAYLIST_ID;
 
-    string playlistName = "playlist_test.txt";
+    string playlistFileName = "playlist_test.txt";
 
-    savePlaylist(playlist, playlistName);
+    savePlaylist(playlist, playlistFileName);
 
-    std::vector<string> list = readPlaylist(playlistName, nullptr);
+    std::vector<string> list = readPlaylist(playlistFileName, nullptr);
 
     for (string song: list) {
         cout << song << endl;
@@ -317,7 +317,23 @@ void testYoutubeURLGet() {
     UniMusic::YoutubeInterface::openUrl(string("/watch?v=rtOvBOTyX00"));
 }
 
+//Approaching magnum opus
+//Takes a playlist on your spotify,
+//Looks up a video from one of the songs
+//And plays it
 void testYoutubeURLSearch() {
+    string playlist = HIDDEN_MY_PLAYLIST_ID_2;
+
+    string playlistFileName = "playlist_test.txt";
+
+    savePlaylist(playlist, playlistFileName);
+
+    std::vector<string> list = readPlaylist(playlistFileName, nullptr);
+    string song = list[1];
+    std::vector<string> songParts = delimitString(song,string("-"));
+    cout << song << endl;
+    string url = UniMusic::YoutubeInterface::findSongUrl(removeQuotation(songParts[0]),removeQuotation(songParts[1]), HIDDEN_YOUTUBE_API_KEY);
+    UniMusic::YoutubeInterface::openUrl(url);
 
 }
 
