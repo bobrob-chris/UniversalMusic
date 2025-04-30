@@ -28,3 +28,7 @@ config.h
 *.vsix
 
 *.jpg
+
+*.txt
+
+*.exe

@@ -68,6 +68,15 @@ I've got Tina working on the front end, (gonna have to give her a more detailed 
 
 But I got to figure out what "Essential Functions" I need
 
+4/29/25
+
+All of this looks like an utter mess, so 
+TODO - organize all the tests into separate file
+TODO - organize all utility commands into a separate file
+
+TODO - make a list of all the final commands, which will live here,
+and will be called from Tina's interface. 
+
 */
 
 
@@ -82,8 +91,10 @@ void testCommandHP();
 void testSpotifyInterface();
 void testSaveFile();
 void testSavePlaylist();
+void testDelimiterAndQuotationRemover();
 
 void testSuite();
+
 
 
 //Function declarations for actual usable functions for final product
@@ -101,6 +112,30 @@ std::vector<string> readPlaylist(string filename, time_t *date);
 //Todo - write function and also write documenation for 
 void updatePlaylist();
 
+
+
+//Utility function for taking strings in the file and delimiting them into
+//components for string
+std::vector<string> delimitString(string &input, string &delimiter);
+//TODO - implement a duplicate with constant char instead of string for the delimiter
+
+
+//Strings from the spotify interface, always look like
+//"Song name", so this just removes the quotation so it looks like
+//Song name
+string removeQuotation(string &input);
+
+
+//I'm gonna need a file that converts names of playlists to their file numbers
+//and associated functionality with that
+//maybe just store a map
+
+//but also have an option to have no file associated with a playlist name
+//(but will have spotify playlist id)
+
+//so that I can have a function which gets all the playlists from your profile id
+
+//TODO - make spotify interface global so there's only one of them
 int main(){
     testSuite();
 
@@ -112,7 +147,8 @@ void testSuite() {
     //testCommandHP();
     //testSpotifyInterface();
     //testSaveFile();
-    testSavePlaylist();
+    //testSavePlaylist();
+    //testDelimiterAndQuotationRemover();
 }
 
 
@@ -228,5 +264,43 @@ std::vector<string> readPlaylist(string filename, time_t *date){
     return v;
 
 }
+
+
+std::vector<string> delimitString(string &input, string &delimiter){
+    string copy = input;
+    std::vector<string> result;
+    size_t pos = copy.find(delimiter);
+    if (pos == string::npos) {
+        return result;
+    }
+    size_t oldPos = 0;
+    do {
+        string seg = copy.substr(oldPos, pos);
+        result.push_back(seg);
+        copy = copy.substr(pos+1);
+        oldPos = pos;
+        pos = copy.find(delimiter);
+    } while (pos != string::npos);
+
+    result.push_back(copy);
+    return result;
+
+}
+
+void testDelimiterAndQuotationRemover() {
+    std::vector<string> output = readPlaylist("playlist_test.txt",nullptr);
+    std::vector<string> name = delimitString(output[0],string("-"));
+    cout << removeQuotation(name[0]) << endl; //I think this should be cheri cheri lady
+    cout << removeQuotation(name[1]) << endl; //I think this should be modern talking
+
+    
+
+}
+
+string removeQuotation(string &input) {
+    return input.substr(1,input.length()-2);
+}
+
+
 
 
