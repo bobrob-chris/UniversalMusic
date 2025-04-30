@@ -4,6 +4,7 @@
 #include <stack>
 
 
+
 string findToken(const string &input, const string &identifier);
 
 UniMusic::SpotifyInterface::SpotifyInterface(string clientId, string clientSecret){

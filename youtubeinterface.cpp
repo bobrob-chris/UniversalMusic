@@ -10,8 +10,8 @@
 #include <array>
 
 #include "htmlparser.h"
+#include "exec.h"
 
-std::string exec_(const char* cmd);
 
 
 using std::string;
@@ -34,22 +34,9 @@ void UniMusic::YoutubeInterface::openUrl(string url) {
     //exec("start https://www.google.com");
     //ShellExecute(NULL, "start", "https://www.google.com", 0, 0 , SW_SHOWNORMAL);
     //TODO - get exec out of htmlparser - why the hell did I do it like that
-    exec_("start https://www.google.com");
+    exec("start https://www.google.com");
 
 
 
 
-}
-
-std::string exec_(const char* cmd) {
-    std::array<char, 128> buffer;
-    std::string result;
-    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd, "r"), _pclose);
-    if (!pipe) {
-        throw std::runtime_error("popen() failed!");
-    }
-    while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr) {
-        result += buffer.data();
-    }
-    return result;
 }
