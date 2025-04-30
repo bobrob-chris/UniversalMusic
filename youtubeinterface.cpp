@@ -12,7 +12,8 @@
 #include "htmlparser.h"
 #include "exec.h"
 
-
+//This can't go wrong right?
+const string stringRoot = "https://www.youtube.com";
 
 using std::string;
 
@@ -25,18 +26,9 @@ string UniMusic::YoutubeInterface::findSongUrl(string name, string artist) {
 }
 
 void UniMusic::YoutubeInterface::openUrl(string url) {
-    //ShellExecute(0, 0, "http://www.google.com", 0, 0 , SW_SHOW );
-    //TODO - I hate using null
-    //so typing this into shell makes google open
-    //start https://www.google.com
-    //so...
-    //Forget SheLlExecute (blah blah blah)
-    //exec("start https://www.google.com");
-    //ShellExecute(NULL, "start", "https://www.google.com", 0, 0 , SW_SHOWNORMAL);
-    //TODO - get exec out of htmlparser - why the hell did I do it like that
-    exec("start https://www.google.com");
-
-
-
-
+    if (url.find(stringRoot) == string::npos) {
+        exec(string("start "+stringRoot+url).c_str());
+    } else {
+        exec(string("start "+url).c_str());
+    }
 }

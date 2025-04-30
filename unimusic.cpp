@@ -93,7 +93,9 @@ void testSpotifyInterface();
 void testSaveFile();
 void testSavePlaylist();
 void testDelimiterAndQuotationRemover();
-void testYoutubeInterface();
+void testYoutubeURLGet();
+void testYoutubeURLSearch();
+
 
 void testSuite();
 
@@ -145,13 +147,18 @@ int main(){
 
 void testSuite() {
 
+
+    //If its commented out that means I'm satisfied with how the test runs so far.
+
     //testNetwork();
     //testCommandHP();
     //testSpotifyInterface();
     //testSaveFile();
     //testSavePlaylist();
     //testDelimiterAndQuotationRemover();
-    testYoutubeInterface();
+    //testYoutubeURLGet();
+    testYoutubeURLSearch;
+    
 }
 
 
@@ -305,7 +312,12 @@ string removeQuotation(string &input) {
 }
 
 
-void testYoutubeInterface() {
-    UniMusic::YoutubeInterface::openUrl(string("waaah"));
+void testYoutubeURLGet() {
+    //should open christina perri thousand years
+    UniMusic::YoutubeInterface::openUrl(string("/watch?v=rtOvBOTyX00"));
+}
+
+void testYoutubeURLSearch() {
+
 }
 
