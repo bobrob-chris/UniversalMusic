@@ -6,9 +6,7 @@
 
 #include <algorithm>
 
-#include "song.h"
-#include "network.h"
-#include "htmlparser.h"
+#include "utils.h"
 #include "spotifyinterface.h"
 #include "youtubeinterface.h"
 
@@ -43,7 +41,7 @@ void testSuite() {
 
 
 void testDelimiterAndQuotationRemover() {
-    std::vector<string> output = readPlaylist("playlist_test.txt",nullptr);
+    std::vector<string> output = readPlaylist("playlist_test.txt");
     std::vector<string> name = delimitString(output[0],string("-"));
     cout << removeQuotation(name[0]) << endl; //I think this should be cheri cheri lady
     cout << removeQuotation(name[1]) << endl; //I think this should be modern talking
@@ -52,30 +50,6 @@ void testDelimiterAndQuotationRemover() {
 
 }
 
-void testNetwork() {
-    //int result = socketTest();
-    //cout << "Exit code: " <<result << endl;
-
-
-    string request = "GET / HTTP/1.1\r\nConnection: close\r\n\r\n"; 
-    //string request = "Post /api/token HTTP/1.1\r\n"
-                    "Host: accounts.spotify.com\r\n"
-                    "User-Agent: curl/8.2.1\r\n"
-                    "Accept: */*\r\n"
-                    "ContentType: application/x-www-form-urlencoded\r\n"
-                    "Content-Type: application/x-www-form-urlencoded\r\n"
-                    "Content-Length: 119\r\n"
-                    "          \r\n"
-                    "grant_type=client_credentials&client_id="+HIDDEN_SPOTIFY_CLIENT_ID+"&"
-                    "client_secret="+HIDDEN_SPOTIFY_CLIENT_SECRET+"\r\n\r\n";
-
-
-
-    UniMusic::NetworkInteface page = UniMusic::NetworkInteface("www.google.com");
-    page.sendRequest(request);
-    cout << page.getResponseBuffer() << endl;
-
-}
 
 void testCommandHP(){
     string output = string();
@@ -118,7 +92,7 @@ void testSavePlaylist(){
 
     savePlaylist(playlist, playlistFileName);
 
-    std::vector<string> list = readPlaylist(playlistFileName, nullptr);
+    std::vector<string> list = readPlaylist(playlistFileName);
 
     for (string song: list) {
         cout << song << endl;

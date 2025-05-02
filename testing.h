@@ -3,7 +3,6 @@
 
 
 
-void testNetwork();
 void testCommandHP();
 void testSpotifyInterface();
 void testSaveFile();

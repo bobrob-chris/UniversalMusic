@@ -15,7 +15,7 @@ void savePlaylist(string playlistid, string filename);
 
 //Returns a playlist given a filename, with each entry in the returned vector being
 //"[name]"-"[artist]". Additionally if date is supplied 
-std::vector<string> readPlaylist(string filename, time_t *date);
+std::vector<string> readPlaylist(string filename);
 
 //Todo - write function and also write documenation for 
 void updatePlaylist();

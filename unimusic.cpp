@@ -6,9 +6,7 @@
 
 #include <algorithm>
 
-#include "song.h"
-#include "network.h"
-#include "htmlparser.h"
+#include "utils.h"
 #include "spotifyinterface.h"
 #include "youtubeinterface.h"
 
@@ -58,37 +56,25 @@ int main(){
 
 
 //TODO implement time and date functionality
+//Maybe have a separate file keep track of dates that playlists have been updated
 
 void savePlaylist(string playlistid, string filename){
     //TODO - maybe put in some error handelling 
     UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(HIDDEN_SPOTIFY_CLIENT_ID, HIDDEN_SPOTIFY_CLIENT_SECRET);
 
-
     std::ofstream output(filename);
-
-    //time_t timestamp;
-    //time(&timestamp);
-
-    //output << timestamp << endl;
-    output << "PLACEHOLDER" << endl;
 
     output << s.getPlaylist(playlistid);
 
     output.close();
 }
 
-std::vector<string> readPlaylist(string filename, time_t *date){
+std::vector<string> readPlaylist(string filename){
     //TODO - error checking
     string line;
     std::ifstream inputFile(filename);
 
     std::vector<string> v;
-
-    //First line - ignore for now until you get time working
-
-    //getline(inputFile, line);
-    //*date = mktime(line); 
-    getline(inputFile, line); //discard first line, should be "PLACEHOLDER"
 
     while (getline (inputFile, line)) {
         v.push_back(line);
@@ -142,7 +128,7 @@ void testYoutubeURLSearch() {
 
     savePlaylist(playlist, playlistFileName);
 
-    std::vector<string> list = readPlaylist(playlistFileName, nullptr);
+    std::vector<string> list = readPlaylist(playlistFileName);
     string song = list[157]; //TODO - make an accesser that checks size of vector
     std::vector<string> songParts = delimitString(song,string("-"));
     cout << song << endl;
@@ -161,7 +147,7 @@ void runSimulator(){
     string playlistFileName = "playlist_test.txt";
     //savePlaylist(playlist, playlistFileName);
 
-    std::vector<string> list = readPlaylist(playlistFileName, nullptr);
+    std::vector<string> list = readPlaylist(playlistFileName);
     int listInt = 0;
     string response = string();
     do {

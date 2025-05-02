@@ -9,8 +9,7 @@
 #include <string>
 #include <array>
 
-#include "htmlparser.h"
-#include "exec.h"
+#include "utils.h"
 
 //This can't go wrong right?
 const string stringRoot = "https://www.youtube.com";

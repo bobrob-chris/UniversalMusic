@@ -1,6 +1,6 @@
 #ifndef _SPOTIFYINTERFACE_H_
 #define _SPOTIFYINTERFACE_H_
-#include "htmlparser.h"
+#include "utils.h"
 #include <string>
 #include <memory>
 

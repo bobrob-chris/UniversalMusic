@@ -1,5 +1,7 @@
-#ifndef _HTMLPARSER_H_
-#define _HTMLPARSER_H_
+#ifndef __UTILS_H_
+#define __UTILS_H_
+
+#include <string>
 #include <string>
 #include <map>
 
@@ -28,5 +30,8 @@ class CommandHP: public HTMLParser {
 
 
 }
+
+
+std::string exec(const char* cmd);
 
 #endif
