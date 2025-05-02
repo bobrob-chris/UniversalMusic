@@ -17,6 +17,8 @@
 #include "unimusic.h"
 
 
+
+
 //##############################
 /*
 4/28/25
@@ -33,6 +35,8 @@ TODO - organize all utility commands into a separate file
 
 TODO - make a list of all the final commands, which will live here,
 and will be called from Tina's interface. 
+
+TODO - removeQuotation has a bug i think
 
 */
 
@@ -64,7 +68,6 @@ void savePlaylist(string playlistid, string filename){
 
     string playlistOutput;
     int result = s.getPlaylist(playlistid, 200, &playlistOutput);
-    std::cout << playlistOutput << std::endl;
     if (result != 0) {
         std::cerr << "getPlaylist failed" << std::endl;
         return;
@@ -92,7 +95,7 @@ std::vector<string> readPlaylist(string filename){
 //I need a function that's going to let me scroll through a list and choose songs via numbers.
 //commands keys are i-up, k-down, l-pick, j,exit
 void runSimulator(){
-    string playlist = HIDDEN_MY_PLAYLIST_ID;
+    string playlist = HIDDEN_MY_PLAYLIST_ID_2;
 
     string playlistFileName = "playlist_test.txt";
     savePlaylist(playlist, playlistFileName);
@@ -120,12 +123,47 @@ void runSimulator(){
             UniMusic::YoutubeInterface::openUrl(url);
         }
 
+
         if (response == "a") {//autoplay
-            
+            int runtime;
+            time_t lastTime;
+            bool isUpdated = true;
+            while (true) {
+                if (isUpdated){
+                    lastTime = std::time(nullptr);
+                    cout << lastTime << endl;                   
+                    
+                    song = list[listInt];
+
+                    std::vector<string> songParts = delimitString(song,string("-"));
+
+                    string url;
+                    int result = UniMusic::YoutubeInterface::findSongUrl(songParts[0],songParts[1], HIDDEN_YOUTUBE_API_KEY, &url);
+                    if (result == 1) {
+                        std::cerr << "FindSongUrl failed" << std::endl;
+                        return;
+                    }
+                    result = UniMusic::YoutubeInterface::getRuntime(url, HIDDEN_YOUTUBE_API_KEY, &runtime);
+                    if (result == 1) {
+                        std::cerr << "Runtime failed" << std::endl;
+                        return;
+                    }
+                    isUpdated = false;
+                    UniMusic::YoutubeInterface::openUrl(url);
+
+                }
+
+                time_t currentTime = std::time(nullptr);
+                if (currentTime - lastTime > runtime+70){
+                    isUpdated = true;
+                    listInt++;
+
+                }
+
+
+            }
         }
 
-
-        cout << string(response.length()+song.length()+2,'\b');
 
 
     } while (response != "j"); //janky, change later

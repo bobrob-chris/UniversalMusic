@@ -54,7 +54,6 @@ int UniMusic::YoutubeInterface::findSongUrl(string &name, string &artist,const s
 
 
     string exec_output = exec(command);
-    //std::cout << exec_output << std::endl;//MONITOR
     //if exec_output is wrong: return 1;
 
     //sift through output until you find the first video, (hardest part)
@@ -94,7 +93,8 @@ int UniMusic::YoutubeInterface::findSongUrl(string &name, string &artist,const s
     //packaging
     //https://www.youtube.com/watch?v=W3q8Od5qJio
 
-    *output = stringRoot+"/watch?v="+videoId;
+    //*output = stringRoot+"/watch?v="+videoId;
+    *output = videoId;
     return 0;
 
 
@@ -103,11 +103,39 @@ int UniMusic::YoutubeInterface::findSongUrl(string &name, string &artist,const s
 
 void UniMusic::YoutubeInterface::openUrl(string &url) {
     if (url.find(stringRoot) == string::npos) {
-        exec("start "+stringRoot+url);
+        exec("start "+stringRoot+"/watch?v="+url);
     } else {
         exec("start "+url);
     }
 }
+
+int UniMusic::YoutubeInterface::getRuntime(string &id,const string &apiKey, int *output) {
+    //https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=url
+
+    string key = "key="+apiKey;
+    string finalUrl  = "https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id="+id+"&"+key;
+
+
+    string command = "curl \""+finalUrl+"\" -s";
+
+    string coutput = exec(command);
+
+    string duration;
+    int result = findToken(coutput, "duration", &duration);
+    if (result != 0) {
+        std::cerr << "FindToken failed" << std::endl;
+        return 1;
+    }
+
+
+    //PT3M18S for cheri cheri lady
+    int min = std::stoi(duration.substr(duration.find("PT")+2,2));//can only handle songs in single digits for min and two digits for seconds
+    int sec = std::stoi(duration.substr(duration.find("M")+1,2));
+
+    *output = (60*min + sec);
+    return 0;
+    
+}    
 
 
 

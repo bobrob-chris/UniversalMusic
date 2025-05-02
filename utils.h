@@ -85,7 +85,7 @@ string removeQuotation(string &input);
 //next comma (must be in that order), after the identifer and returns it.
 //I've found it useful for parsing api results.
 //
-//ex: "identifier":"[what we return]",
+//ex: "identifier":[what we return],
 //Returns -1, if error
 //returns 0, if success
 //otherwise puts things in output

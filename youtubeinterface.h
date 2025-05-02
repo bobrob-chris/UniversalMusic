@@ -26,6 +26,10 @@ class YoutubeInterface {
         //TODO - make a function that returns a vector<string> of a bunch of youtube videos related to 
         //song search so that user can choose which one they want, as well as get the name of the video
 
+        //searches for a video and gets the videos runtime in seconds
+        //id can't have the youtube "watch?v=..." associated with it
+        static int getRuntime(string &id, const string &apiKey,int *output);
+
 };
 
 }
