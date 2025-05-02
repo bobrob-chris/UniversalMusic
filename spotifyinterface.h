@@ -3,32 +3,49 @@
 #include "utils.h"
 #include <string>
 #include <memory>
+#include <vector>
 
 namespace UniMusic {
 
+//Interface for interacting with the spotifyAPI
 class SpotifyInterface {
     private:
-        CommandHP curlWrapper;
-        string clientId; //TODO - when I make this public on github this needs to be made more secure. look into github secrets
-        string clientSecret; //TODO - same as above but especially for this
+        CommandWI curlWrapper;
+        string clientId;
+        string clientSecret;
 
         string command; 
         string accessToken;
-        void generateAccessToken();
+        //Kinda the same thing as the getAccess token before,
+        //If it results in 1, error occured, otherwise, with zero,
+        //Everything is fine, and it saved the result in accessToken.
+        int generateAccessToken();
 
 
     public:
-        SpotifyInterface(string clientId, string clientSecret); //TODO - probably going to need credentials in the constructor at some point
+        SpotifyInterface(string clientId, string clientSecret);
         ~SpotifyInterface() = default;
 
+        //The Access Token is generated upon creation
+        //It provides a simpler way to interact with spotify api
+        //However it expires after 30 mins, and needs to be regenerated. 
+        //TODO - error handelling for exec commnad
         string &getAccessToken(){return accessToken;};
 
-        string getPlaylist(string playlistId); //TODO - implemnt a version of this that returns a vector instead of a string (might not be needed, we'll see).
+        //TODO - all the following methods should have a way to check that their access token is valid.
+        //TODO - check all outputs for error handeling
 
-        string getSong(string songId);
+        //update -- SO MUCH ERROR HANDLING
 
-        string getTracks();
+        //This method  grabs a playlist given a playlistId and returns it in output, returns 0, if success, 1 if error
+        //The output is every song in songName-artist delimited by newlines
+        int getPlaylist(string playlistId, int maxSongs, string *output); 
 
+        //This method  grabs a songName and returns it in output, returns 0, if success, 1 if error
+        int getSong(string songId, string *output);
+
+        //This method grabs all the playlistIds for the given user and puts it in output, 
+        //int getUserPlaylist(string user, vector *output);
 };
 
 

@@ -55,7 +55,7 @@ void testCommandHP(){
     string output = string();
     map<string,string> m =  map<string, string>();
     m.insert({"Content-Type","application/x-www-form-urlencoded"});
-    UniMusic::CommandHP p = UniMusic::CommandHP();
+    UniMusic::CommandWI p = UniMusic::CommandWI();
     int result = p.sendRequest("https://accounts.spotify.com/api/token", m, UniMusic::Post, "grant_type=client_credentials&client_id="+HIDDEN_SPOTIFY_CLIENT_ID+"&client_secret="+HIDDEN_SPOTIFY_CLIENT_SECRET, &output);
     cout << output << endl;
     
@@ -78,7 +78,10 @@ void testSaveFile() {
 
     std::ofstream output("playlist_test.txt");
 
-    output << s.getPlaylist(playlist);
+    string command_output;
+    int result = s.getPlaylist(playlist, 300, &command_output);
+    if (result == 1) std::cerr << "getPlaylist Failed" << std::endl;
+    output << command_output;
 
     output.close();
 
@@ -119,7 +122,8 @@ void testYoutubeURLSearch() {
     string song = list[157]; //TODO - make an accesser that checks size of vector
     std::vector<string> songParts = delimitString(song,string("-"));
     cout << song << endl;
-    string url = UniMusic::YoutubeInterface::findSongUrl(removeQuotation(songParts[0]),removeQuotation(songParts[1]), HIDDEN_YOUTUBE_API_KEY);
+    string url;
+    int result = UniMusic::YoutubeInterface::findSongUrl(songParts[0],songParts[1], HIDDEN_YOUTUBE_API_KEY, &url);
     UniMusic::YoutubeInterface::openUrl(url);
 
 }

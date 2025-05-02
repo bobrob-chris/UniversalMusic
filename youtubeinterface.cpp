@@ -17,11 +17,10 @@ const string stringRoot = "https://www.youtube.com";
 
 using std::string;
 
-//helper method to replace all instances of find in text with replace
-string replaceAll(string text, string find, string replace);
+
 
 //harder to implemnt of the two
-string UniMusic::YoutubeInterface::findSongUrl(string name, string artist, string apiKey) {
+int UniMusic::YoutubeInterface::findSongUrl(string &name, string &artist,const string &apiKey, string *output) {
     //search bar query: https://www.youtube.com/results?search_query=cheri+cher+lady+modern+talking+vevo
     //returns 
 
@@ -54,81 +53,61 @@ string UniMusic::YoutubeInterface::findSongUrl(string name, string artist, strin
 
 
 
-    //TODO - implement error handeling for exec c
-    string output = exec(command.c_str());
-        //std::cout << output << std::endl;
+    string exec_output = exec(command);
+    //std::cout << exec_output << std::endl;//MONITOR
+    //if exec_output is wrong: return 1;
 
     //sift through output until you find the first video, (hardest part)
     //Actuall, really dumb idea
     //"videoId": "eNvUS-6PTbs"
 
     //find position of first video
-    size_t videoPos = output.find("videoId");
+    size_t videoPos = exec_output.find("videoId");
     if (videoPos == string::npos) {
-        std::cout << "didn't find videoId" << std::endl;
-        //idk what this does, coming from java
+        return 1;
     }
 
-    
-
-    size_t colonPos = output.find(":", videoPos);
+    size_t colonPos = exec_output.find(":", videoPos);
     if (colonPos == string::npos) {
-        std::cout << "didn't find colonPos" << std::endl;
+        return 1;
     }
 
     
 
-    size_t firstQuotePos = output.find("\"", colonPos);
+    size_t firstQuotePos = exec_output.find("\"", colonPos);
     if (firstQuotePos == string::npos) {
-        std::cout << "didn't find firstQuotePos" << std::endl;
+        return 1;
     }
     firstQuotePos++;
 
-
-
-    size_t secondQuotePos = output.find("\"", firstQuotePos);
+    size_t secondQuotePos = exec_output.find("\"", firstQuotePos);
     if (firstQuotePos == string::npos) {
-        std::cout << "didn't find firstQuotePos" << std::endl;
+        return 1;
     }
 
 
 
-    string videoId =  output.substr(firstQuotePos, secondQuotePos-firstQuotePos);
+    string videoId =  exec_output.substr(firstQuotePos, secondQuotePos-firstQuotePos);
 
 
 
     //packaging
     //https://www.youtube.com/watch?v=W3q8Od5qJio
 
-    return stringRoot+"/watch?v="+videoId;
+    *output = stringRoot+"/watch?v="+videoId;
+    return 0;
 
 
 
 }
 
-void UniMusic::YoutubeInterface::openUrl(string url) {
+void UniMusic::YoutubeInterface::openUrl(string &url) {
     if (url.find(stringRoot) == string::npos) {
-        exec(string("start "+stringRoot+url).c_str());
+        exec("start "+stringRoot+url);
     } else {
-        exec(string("start "+url).c_str());
+        exec("start "+url);
     }
 }
 
 
 
-string replaceAll(string text, string find, string replace){
-    //almost exactly copied from geeks for geeks
-
-    string copy = text;
-
-    size_t pos = copy.find(find);
-
-    while (pos != string::npos) {
-
-        copy.replace(pos, find.size(), replace);
-        pos = copy.find(find,pos + replace.size());
-    }
-
-    return copy;
-
-}

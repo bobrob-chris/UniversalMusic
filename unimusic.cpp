@@ -55,16 +55,21 @@ int main(){
 
 
 
-//TODO implement time and date functionality
-//Maybe have a separate file keep track of dates that playlists have been updated
+
 
 void savePlaylist(string playlistid, string filename){
-    //TODO - maybe put in some error handelling 
     UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(HIDDEN_SPOTIFY_CLIENT_ID, HIDDEN_SPOTIFY_CLIENT_SECRET);
 
     std::ofstream output(filename);
 
-    output << s.getPlaylist(playlistid);
+    string playlistOutput;
+    int result = s.getPlaylist(playlistid, 200, &playlistOutput);
+    std::cout << playlistOutput << std::endl;
+    if (result != 0) {
+        std::cerr << "getPlaylist failed" << std::endl;
+        return;
+    }
+    output << playlistOutput;
 
     output.close();
 }
@@ -87,7 +92,7 @@ std::vector<string> readPlaylist(string filename){
 //I need a function that's going to let me scroll through a list and choose songs via numbers.
 //commands keys are i-up, k-down, l-pick, j,exit
 void runSimulator(){
-    string playlist = HIDDEN_MY_PLAYLIST_ID_2;
+    string playlist = HIDDEN_MY_PLAYLIST_ID;
 
     string playlistFileName = "playlist_test.txt";
     savePlaylist(playlist, playlistFileName);
@@ -106,8 +111,17 @@ void runSimulator(){
         if (response == "k" && listInt < list.size() -2) listInt++;
         if (response == "l") {
             std::vector<string> songParts = delimitString(song,string("-"));
-            string url = UniMusic::YoutubeInterface::findSongUrl(songParts[0],songParts[1], HIDDEN_YOUTUBE_API_KEY);
+            string url;
+            int result = UniMusic::YoutubeInterface::findSongUrl(songParts[0],songParts[1], HIDDEN_YOUTUBE_API_KEY, &url);
+            if (result == 1) {
+                std::cerr << "FindSongUrl failed" << std::endl;
+                return;
+            }
             UniMusic::YoutubeInterface::openUrl(url);
+        }
+
+        if (response == "a") {//autoplay
+            
         }
 
 

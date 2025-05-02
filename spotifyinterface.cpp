@@ -7,14 +7,15 @@
 
 
 UniMusic::SpotifyInterface::SpotifyInterface(string clientId, string clientSecret){
-    curlWrapper = CommandHP();
+    curlWrapper = CommandWI();
     this->clientId = clientId;
     this->clientSecret = clientSecret;
-    generateAccessToken();
+    int result = generateAccessToken();
+    //TODO - check result here, idk what to do if its not zero tho
 }
 
 
-void UniMusic::SpotifyInterface::generateAccessToken(){
+int UniMusic::SpotifyInterface::generateAccessToken(){
     //Assumes return from spotify service will be {access_token:"...","token_type":"Bearer","expires_in":3600}
     string output = string();
     map<string,string> m =  map<string, string>();
@@ -25,33 +26,45 @@ void UniMusic::SpotifyInterface::generateAccessToken(){
     int result = curlWrapper.sendRequest("https://accounts.spotify.com/api/token", 
                 m, UniMusic::Post, body, &output);
 
-    //TODO - check if result is not zero;
+    if (result != 0){
+        return 1;
+    }
     
-    accessToken = findToken(output, "access_token");
+    result = findToken(output, "access_token", &accessToken);
+    if (result != 0){
+        return 1;
+    }
+    return 0;
 }
 
-string UniMusic::SpotifyInterface::getPlaylist(string playlistId) {
-    string output = string();
-    string output2 = string();
+int UniMusic::SpotifyInterface::getPlaylist(string playlistId, int maxSongs, string *output) {
+    string curlWrapperResult = string();
+    string requestResult = string();
     string final_output = string();
+
 
     map<string,string> m = map<string, string>();
     m.insert({"Authorization","Bearer "+accessToken});
 
-    //TODO - make it able to handle more than 200 at a time.
-    int result = curlWrapper.sendRequest("https://api.spotify.com/v1/playlists/"+playlistId, m, UniMusic::Get, string(), &output);
-    int second_result = curlWrapper.sendRequest("https://api.spotify.com/v1/playlists/"+playlistId+"/tracks?offset=100&limit=100", m, UniMusic::Get, string(), &output2);
-
-    //TODO - error handeling
-
-    output += output2;
-   
-
-    //TODO - write a tree generator that keeps track of all the elements in output instead of going by guesswork for 
+    int times = maxSongs/100 + 1;
+    //times should at least be 1
 
 
+    int result = curlWrapper.sendRequest("https://api.spotify.com/v1/playlists/"+playlistId, m, UniMusic::Get, string(), &requestResult);
+    if (result != 0) {
+        return 1;
+    }
 
+    for (int i = 1; i < times; i++) {
+        string offset = std::to_string(i*100);
+        int result = curlWrapper.sendRequest("https://api.spotify.com/v1/playlists/"+playlistId+"/tracks?offset="+offset+"&limit=100", m, UniMusic::Get, string(), &curlWrapperResult);
+        if (result != 0){
+            return 1;
+        }
+        requestResult += curlWrapperResult;
 
+    }
+    
     //can delimit songs in playlist by added_at
     //then find "artists"
     //then find "name":[artist name]
@@ -60,46 +73,59 @@ string UniMusic::SpotifyInterface::getPlaylist(string playlistId) {
 
     //then "name":song_name
 
-    std::stack<string> s = std::stack<string>();
+
+    //TODO - new thing, if find token is an error, just leave it blank in that part of the song, or algternatively, don't add it
 
 
-    //This whole thing could probably be made a lot faster
-    int count = 0; 
-    size_t addedPos = output.find("added_at");
+    size_t addedPos = requestResult.find("added_at");
+    std::cout << (addedPos != string::npos) << std::endl;
 
     while (addedPos != string::npos) {//while added_at is still found
 
-        size_t artistsPos = output.find("artists",addedPos); //only finds first artist .. TODO - make it so that it finds multiple artists at some point
+        string artistName, songName;
 
-        size_t namePos = output.find("name",artistsPos);
 
-        string artistName = findToken(output.substr(namePos),"name");
+        size_t artistsPos = requestResult.find("artists",addedPos); //only finds first artist .. TODO - make it so that it finds multiple artists at some point
+        if (artistsPos == string::npos) return 1;
 
-        size_t durationPos = output.find("duration_ms",namePos);
 
-        string duration = findToken(output.substr(durationPos), "duration_ms");
 
-        string songName = findToken(output.substr(durationPos), "name");
+        size_t namePos = requestResult.find("name",artistsPos);
+        if (namePos == string::npos) return 1;
 
-        addedPos = output.find("added_at",durationPos);
 
-        final_output += removeQuotation(songName)+"-"+removeQuotation(artistName) +"-"+ removeQuotation(duration)+"\n";
-        
-        
+        result = findToken(requestResult.substr(namePos),"name", &artistName);
+        if (result != 0) return 1;
+
+
+        size_t durationPos = requestResult.find("duration_ms",namePos);
+        if (durationPos == string::npos) return 1;
+
+        //string duration = findToken(output.substr(durationPos), "duration_ms");
+
+
+        result = findToken(requestResult.substr(durationPos), "name", &songName);
+        if (result != 0) return 1;
+
+
+        addedPos = requestResult.find("added_at",durationPos);
+
+
+        //final_output += removeQuotation(songName)+"-"+removeQuotation(artistName) +"\n";//+"-"+ removeQuotation(duration)
+        final_output += songName+"-"+artistName +"\n";//+"-"+ removeQuotation(duration)
+
 
     }  
 
 
-  
-    
-    return final_output;
+
+    *output = final_output;
+
+    return 0;
 }
 
-
-string UniMusic::SpotifyInterface::getSong(string songId) {
-    string output = string();
-    map<string,string> m = map<string, string>();
-    m.insert({"Authorization","Bearer "+accessToken});
-    return "NOT DONE"; //TODO - ...
+//TODO - implement this
+int UniMusic::SpotifyInterface::getSong(string songId, string *output) {
+    return 1;
 }
 

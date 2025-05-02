@@ -1,3 +1,4 @@
+/*Copyright 2025, by Robert Spencer, all rights reserved*/
 #include "utils.h"
 
 #include <cstdio>
@@ -11,10 +12,11 @@
 
 //TODO - understand this function
 //https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
-std::string exec(const char* cmd) {
+std::string exec(string &cmd) {
+    const char* cmd_c = cmd.c_str();
     std::array<char, 128> buffer;
     std::string result;
-    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd, "r"), _pclose);
+    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd_c, "r"), _pclose);
     if (!pipe) {
         throw std::runtime_error("popen() failed!");
     }
@@ -25,7 +27,7 @@ std::string exec(const char* cmd) {
 }
 
 
-int UniMusic::CommandHP::sendRequest(string url, map<string, string> headers, Method method, string body, string *output) {
+int UniMusic::CommandWI::sendRequest(string url, map<string, string> headers, Method method, string body, string *output) {
     string command("curl ");
     if (method == Post){
         command += "-X POST ";
@@ -40,7 +42,7 @@ int UniMusic::CommandHP::sendRequest(string url, map<string, string> headers, Me
 
     try {
     
-       *output = string(exec(command.c_str()));
+       *output = string(exec(command));
         return 0;
     } catch (std::runtime_error error) {
         return 1;
@@ -70,20 +72,52 @@ std::vector<string> delimitString(string &input, string &delimiter){
 }
 
 string removeQuotation(string &input) {
-    return input.substr(1,input.length()-2);
+    string output = string();
+    if (output.substr(0,1) == "\""){
+        output = output.substr(1);
+    }
+    if (output.substr(output.length()-1, 1) == "\"") {
+        output = output.substr(0, output.length()-1);
+    }
+    return output;
 }
 
 
 
-string findToken(const string &input, const string &identifer) {
-    // TODO - add some sanity error checking and all that jazz
+int findToken(const string &input, const string &identifer, string *output) {
 
-    // assuming {"somehting":"bleh","something_else":"bleeeeeeeeeeeeh"}
     size_t a,b,c;
 
     a = input.find(identifer);
-    b = input.find(":",a)+1;
+    if (a == string::npos){
+        return -1;
+    }
+    b = input.find(":",a);
+    if (b == string::npos){
+        return -1;
+    }
+    b++;
     c = input.find(",", b);
+    if (c == string::npos){
+        return -1;
+    }
+    *output = input.substr(b,c-b);
+    return 0;
+}
 
-    return input.substr(b,c-b);
+string replaceAll(string text, string find, string replace){
+    //almost exactly copied from geeks for geeks
+
+    string copy = text;
+
+    size_t pos = copy.find(find);
+
+    while (pos != string::npos) {
+
+        copy.replace(pos, find.size(), replace);
+        pos = copy.find(find,pos + replace.size());
+    }
+
+    return copy;
+
 }

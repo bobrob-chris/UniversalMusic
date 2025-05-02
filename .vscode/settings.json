@@ -60,6 +60,7 @@
         "ranges": "cpp",
         "span": "cpp",
         "stack": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "optional": "cpp"
     }
 }
