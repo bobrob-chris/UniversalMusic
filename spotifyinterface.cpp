@@ -77,11 +77,13 @@ string UniMusic::SpotifyInterface::getPlaylist(string playlistId) {
 
         size_t durationPos = output.find("duration_ms",namePos);
 
+        string duration = findToken(output.substr(durationPos), "duration_ms");
+
         string songName = findToken(output.substr(durationPos), "name");
 
         addedPos = output.find("added_at",durationPos);
 
-        final_output += removeQuotation(songName)+"-"+removeQuotation(artistName) + "\n";
+        final_output += removeQuotation(songName)+"-"+removeQuotation(artistName) +"-"+ removeQuotation(duration)+"\n";
         
         
 
