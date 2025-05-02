@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 #include <array>
+#include <vector>
 
 
 //TODO - understand this function
@@ -45,4 +46,29 @@ int UniMusic::CommandHP::sendRequest(string url, map<string, string> headers, Me
         return 1;
     }
 
+}
+
+std::vector<string> delimitString(string &input, string &delimiter){
+    string copy = input;
+    std::vector<string> result;
+    size_t pos = copy.find(delimiter);
+    if (pos == string::npos) {
+        return result;
+    }
+    size_t oldPos = 0;
+    do {
+        string seg = copy.substr(oldPos, pos);
+        result.push_back(seg);
+        copy = copy.substr(pos+1);
+        oldPos = pos;
+        pos = copy.find(delimiter);
+    } while (pos != string::npos);
+
+    result.push_back(copy);
+    return result;
+
+}
+
+string removeQuotation(string &input) {
+    return input.substr(1,input.length()-2);
 }

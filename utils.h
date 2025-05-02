@@ -2,7 +2,7 @@
 #define __UTILS_H_
 
 #include <string>
-#include <string>
+#include <vector>
 #include <map>
 
 using std::string, std::map;
@@ -33,5 +33,17 @@ class CommandHP: public HTMLParser {
 
 
 std::string exec(const char* cmd);
+
+
+//Utility function for taking strings in the file and delimiting them into
+//components for string
+std::vector<string> delimitString(string &input, string &delimiter);
+//TODO - implement a duplicate with constant char instead of string for the delimiter
+
+
+//Strings from the spotify interface, always look like
+//"Song name", so this just removes the quotation so it looks like
+//Song name
+string removeQuotation(string &input);
 
 #endif

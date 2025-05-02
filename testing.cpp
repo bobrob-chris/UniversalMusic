@@ -99,5 +99,29 @@ void testSavePlaylist(){
     }
 }
 
+void testYoutubeURLGet() {
+    //should open christina perri thousand years
+    UniMusic::YoutubeInterface::openUrl(string("/watch?v=rtOvBOTyX00"));
+}
+
+//Approaching magnum opus
+//Takes a playlist on your spotify,
+//Looks up a video from one of the songs
+//And plays it
+void testYoutubeURLSearch() {
+    string playlist = HIDDEN_MY_PLAYLIST_ID;
+
+    string playlistFileName = "playlist_test.txt";
+
+    savePlaylist(playlist, playlistFileName);
+
+    std::vector<string> list = readPlaylist(playlistFileName);
+    string song = list[157]; //TODO - make an accesser that checks size of vector
+    std::vector<string> songParts = delimitString(song,string("-"));
+    cout << song << endl;
+    string url = UniMusic::YoutubeInterface::findSongUrl(removeQuotation(songParts[0]),removeQuotation(songParts[1]), HIDDEN_YOUTUBE_API_KEY);
+    UniMusic::YoutubeInterface::openUrl(url);
+
+}
 
 
