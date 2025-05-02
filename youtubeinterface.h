@@ -20,6 +20,9 @@ class YoutubeInterface {
         //or just /watch?v=rtOvBOTyX00
         static void openUrl(string url);
 
+        //TODO - make a function that returns a vector<string> of a bunch of youtube videos related to 
+        //song search so that user can choose which one they want, as well as get the name of the video
+
 };
 
 }

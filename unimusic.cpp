@@ -4,13 +4,14 @@
 #include <vector>
 #include <ctime>
 
+#include <algorithm>
+
 #include "song.h"
 #include "network.h"
 #include "htmlparser.h"
 #include "spotifyinterface.h"
 #include "youtubeinterface.h"
 
-// security so I don't have things on github
 #include "config.h"
 
 
@@ -129,6 +130,9 @@ std::vector<string> delimitString(string &input, string &delimiter);
 //Song name
 string removeQuotation(string &input);
 
+//I need a function that's going to let me scroll through a list and choose songs via numbers.
+//commands keys are i-up, k-down, l-pick, j,exit
+void runSimulator();
 
 //I'm gonna need a file that converts names of playlists to their file numbers
 //and associated functionality with that
@@ -141,7 +145,8 @@ string removeQuotation(string &input);
 
 //TODO - make spotify interface global so there's only one of them
 int main(){
-    testSuite();
+    //testSuite();
+    runSimulator();
 
 }
 
@@ -322,18 +327,55 @@ void testYoutubeURLGet() {
 //Looks up a video from one of the songs
 //And plays it
 void testYoutubeURLSearch() {
-    string playlist = HIDDEN_MY_PLAYLIST_ID_2;
+    string playlist = HIDDEN_MY_PLAYLIST_ID;
 
     string playlistFileName = "playlist_test.txt";
 
     savePlaylist(playlist, playlistFileName);
 
     std::vector<string> list = readPlaylist(playlistFileName, nullptr);
-    string song = list[1];
+    string song = list[157]; //TODO - make an accesser that checks size of vector
     std::vector<string> songParts = delimitString(song,string("-"));
     cout << song << endl;
     string url = UniMusic::YoutubeInterface::findSongUrl(removeQuotation(songParts[0]),removeQuotation(songParts[1]), HIDDEN_YOUTUBE_API_KEY);
     UniMusic::YoutubeInterface::openUrl(url);
 
 }
+
+
+
+//I need a function that's going to let me scroll through a list and choose songs via numbers.
+//commands keys are i-up, k-down, l-pick, j,exit
+void runSimulator(){
+    string playlist = HIDDEN_MY_PLAYLIST_ID;
+
+    string playlistFileName = "playlist_test.txt";
+    //savePlaylist(playlist, playlistFileName);
+
+    std::vector<string> list = readPlaylist(playlistFileName, nullptr);
+    int listInt = 0;
+    string response = string();
+    do {
+        string song = list[listInt];
+        cout << song << ": ";
+        
+        getline(std::cin,response);
+        //std::cin >> response;
+        //commands
+        if (response == "i" && listInt > 0) listInt--;
+        if (response == "k" && listInt < list.size() -2) listInt++;
+        if (response == "l") {
+            std::vector<string> songParts = delimitString(song,string("-"));
+            string url = UniMusic::YoutubeInterface::findSongUrl(removeQuotation(songParts[0]),removeQuotation(songParts[1]), HIDDEN_YOUTUBE_API_KEY);
+            UniMusic::YoutubeInterface::openUrl(url);
+        }
+
+
+        cout << string(response.length()+song.length()+2,'\b');
+
+
+    } while (response != "j"); //janky, change later
+}
+
+
 
