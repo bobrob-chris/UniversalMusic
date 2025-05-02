@@ -72,3 +72,18 @@ std::vector<string> delimitString(string &input, string &delimiter){
 string removeQuotation(string &input) {
     return input.substr(1,input.length()-2);
 }
+
+
+
+string findToken(const string &input, const string &identifer) {
+    // TODO - add some sanity error checking and all that jazz
+
+    // assuming {"somehting":"bleh","something_else":"bleeeeeeeeeeeeh"}
+    size_t a,b,c;
+
+    a = input.find(identifer);
+    b = input.find(":",a)+1;
+    c = input.find(",", b);
+
+    return input.substr(b,c-b);
+}

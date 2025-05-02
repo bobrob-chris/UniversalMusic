@@ -5,7 +5,6 @@
 
 
 
-string findToken(const string &input, const string &identifier);
 
 UniMusic::SpotifyInterface::SpotifyInterface(string clientId, string clientSecret){
     curlWrapper = CommandHP();
@@ -38,14 +37,20 @@ string UniMusic::SpotifyInterface::getPlaylist(string playlistId) {
 
     map<string,string> m = map<string, string>();
     m.insert({"Authorization","Bearer "+accessToken});
+
+    //TODO - make it able to handle more than 200 at a time.
     int result = curlWrapper.sendRequest("https://api.spotify.com/v1/playlists/"+playlistId, m, UniMusic::Get, string(), &output);
     int second_result = curlWrapper.sendRequest("https://api.spotify.com/v1/playlists/"+playlistId+"/tracks?offset=100&limit=100", m, UniMusic::Get, string(), &output2);
 
-    
+    //TODO - error handeling
+
     output += output2;
    
 
     //TODO - write a tree generator that keeps track of all the elements in output instead of going by guesswork for 
+
+
+
 
     //can delimit songs in playlist by added_at
     //then find "artists"
@@ -76,7 +81,7 @@ string UniMusic::SpotifyInterface::getPlaylist(string playlistId) {
 
         addedPos = output.find("added_at",durationPos);
 
-        final_output += songName+"-"+artistName + "\n";
+        final_output += removeQuotation(songName)+"-"+removeQuotation(artistName) + "\n";
         
         
 
@@ -96,15 +101,3 @@ string UniMusic::SpotifyInterface::getSong(string songId) {
     return "NOT DONE"; //TODO - ...
 }
 
-string findToken(const string &input, const string &identifer) {
-    // TODO - add some sanity error checking and all that jazz
-
-    // assuming {"somehting":"bleh","something_else":"bleeeeeeeeeeeeh"}
-    size_t a,b,c;
-
-    a = input.find(identifer);
-    b = input.find(":",a)+1;
-    c = input.find(",", b);
-
-    return input.substr(b,c-b);
-}

@@ -87,10 +87,10 @@ std::vector<string> readPlaylist(string filename){
 //I need a function that's going to let me scroll through a list and choose songs via numbers.
 //commands keys are i-up, k-down, l-pick, j,exit
 void runSimulator(){
-    string playlist = HIDDEN_MY_PLAYLIST_ID;
+    string playlist = HIDDEN_MY_PLAYLIST_ID_2;
 
     string playlistFileName = "playlist_test.txt";
-    //savePlaylist(playlist, playlistFileName);
+    savePlaylist(playlist, playlistFileName);
 
     std::vector<string> list = readPlaylist(playlistFileName);
     int listInt = 0;
@@ -106,7 +106,7 @@ void runSimulator(){
         if (response == "k" && listInt < list.size() -2) listInt++;
         if (response == "l") {
             std::vector<string> songParts = delimitString(song,string("-"));
-            string url = UniMusic::YoutubeInterface::findSongUrl(removeQuotation(songParts[0]),removeQuotation(songParts[1]), HIDDEN_YOUTUBE_API_KEY);
+            string url = UniMusic::YoutubeInterface::findSongUrl(songParts[0],songParts[1], HIDDEN_YOUTUBE_API_KEY);
             UniMusic::YoutubeInterface::openUrl(url);
         }
 

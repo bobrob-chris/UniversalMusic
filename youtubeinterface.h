@@ -14,6 +14,8 @@ class YoutubeInterface {
         //name and artist should be free of any extraneous characters,
         //returns a link that upon pasting into a search bar will pull up
         //a video of the song
+
+        //can only do this 100 times per day apparently.
         static string findSongUrl(string name, string artist, string apiKey);
 
         //should either be of the format //https://www.youtube.com/watch?v=rtOvBOTyX00

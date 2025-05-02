@@ -46,4 +46,10 @@ std::vector<string> delimitString(string &input, string &delimiter);
 //Song name
 string removeQuotation(string &input);
 
+
+//useful for stringing parsing in results from apis
+//in input, finding "identifier":"[what we return]"
+string findToken(const string &input, const string &identifier);
+
+
 #endif

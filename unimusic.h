@@ -13,6 +13,7 @@ using std::string;
 //Otherwise, everything in the file will be of format "[name]"-"[artist]"
 void savePlaylist(string playlistid, string filename);
 
+
 //Returns a playlist given a filename, with each entry in the returned vector being
 //"[name]"-"[artist]". Additionally if date is supplied 
 std::vector<string> readPlaylist(string filename);
@@ -33,5 +34,12 @@ void runSimulator();
 //(but will have spotify playlist id)
 
 //so that I can have a function which gets all the playlists from your profile id
+
+
+void changeYoutube(int songIndex, string youtubeIdentifer,string filename);
+
+void insertYoutubeAllNotFilled(string filename);
+
+
 
 #endif
