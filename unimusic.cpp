@@ -274,22 +274,6 @@ void UniMusic::MusicPlayer::startPlayer(){
 
 
 
-
-
-
-void UniMusic::MusicPlayer::savePlaylist(string playlistid, string filename){
-    std::ofstream output(filename);
-    string playlistOutput;
-    int result = si->getPlaylist(playlistid, 200, &playlistOutput);
-    if (result != 0) {
-        std::cerr << "getPlaylist failed" << std::endl;
-        return;
-    }
-    output << playlistOutput;
-
-    output.close();
-}
-
 std::vector<string> UniMusic::MusicPlayer::readPlaylist(string filename){
     //TODO - error checking
     string line;
@@ -305,6 +289,22 @@ std::vector<string> UniMusic::MusicPlayer::readPlaylist(string filename){
     inputFile.close();
 
 }
+
+
+void UniMusic::MusicPlayer::savePlaylist(string playlistid, string filename){
+    std::ofstream output(filename);
+    string playlistOutput;
+    int result = si->getPlaylist(playlistid, 200, &playlistOutput);
+    if (result != 0) {
+        std::cerr << "getPlaylist failed" << std::endl;
+        return;
+    }
+    output << playlistOutput;
+
+    output.close();
+}
+
+
 
 int UniMusic::MusicPlayer::savePlaylist(std::vector<string> &vec, string &filename){
     //TODO - impelent try and accept blocks for this code
