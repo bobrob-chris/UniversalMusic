@@ -96,11 +96,11 @@ class MusicPlayer {
 
         void changeYoutube(int songIndex, string youtubeIdentifer,string filename);
 
-        void insertYoutubeAllNotFilled(string filename);
-
 
         //TODO - add autoplay
         //TODO - then add shuffle
+
+        void conditionalCreate(string filename);
 
 
 

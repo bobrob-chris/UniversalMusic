@@ -131,3 +131,42 @@ int UniMusic::SpotifyInterface::getSong(string songId, string *output) {
     return 1;
 }
 
+
+int UniMusic::SpotifyInterface::getUserPlaylist(const string &user, std::vector<string> *output){
+    map<string,string> m = map<string, string>();
+    m.insert({"Authorization","Bearer "+accessToken});
+
+
+    string requestResult;
+    int result = curlWrapper.sendRequest("https://api.spotify.com/v1/users/"+user+"/playlists", m, UniMusic::Get, string(), &requestResult);
+    //std::cout << requestResult << std::endl; //TODO - delete later
+
+
+    //THIs loop is so janky but it works I suppose
+    size_t bracket = requestResult.find("[");
+
+    while (bracket != string::npos) {
+
+        size_t spot = requestResult.find( "href",bracket);
+        if (spot == string::npos) {
+            break;
+        }
+        string url;
+        requestResult = requestResult.substr(spot);
+        findToken(requestResult,"href",&url);
+        if (url.find("tracks") == string::npos && url.find("playlists") != string::npos) {
+            size_t p = url.find("playlists")+10;
+            url = url.substr(p,url.length() - p -1);
+            output->push_back(url);
+
+        }
+
+
+        size_t collaborative = requestResult.find("[");
+
+    }
+    return 0;
+
+}
+
+

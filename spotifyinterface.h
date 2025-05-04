@@ -46,8 +46,8 @@ class SpotifyInterface {
         //This method  grabs a songName and returns it in output, returns 0, if success, 1 if error
         int getSong(string songId, string *output);
 
-        //This method grabs all the playlistIds for the given user and puts it in output, 
-        //int getUserPlaylist(string user, vector *output);
+        //This method grabs all the oublic playlistIds for the given user and puts it in output, 
+        int getUserPlaylist(const string &user, std::vector<string> *output);
 };
 
 

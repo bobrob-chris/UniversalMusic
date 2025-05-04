@@ -18,7 +18,11 @@
 
 #define STANDARD_DELIMITER ","
 
-//z0NfI2NeDHI
+#define MASTER_FILE "mf.txt"
+
+//change to something else at somepoint
+#define DEFAULT_CURRENT "playlist_test.txt"  
+
 
 
 //##############################
@@ -50,32 +54,40 @@ using std::endl;
 
 
 int main(){
-    //testSuite();
     UniMusic::MusicPlayer m = UniMusic::MusicPlayer(HIDDEN_SPOTIFY_CLIENT_ID,HIDDEN_SPOTIFY_CLIENT_SECRET,HIDDEN_YOUTUBE_API_KEY);
-
-
     m.runInterface();
+    
     
 }
 
 
 void UniMusic::MusicPlayer::runInterface() {
-    string playlist = HIDDEN_MY_PLAYLIST_ID_2;
+    //string playlist = HIDDEN_MY_PLAYLIST_ID_2;
+    //string playlistFileName = "playlist_test.txt";
 
-    string playlistFileName = "playlist_test.txt";
-    //check if playlist exitsts
-    //TODO - put in function
-    //START OF FUTURE FUNCTION
+    //TODO - sets file with firstline being the the last playlist open
+    // and all the other files being the potential playlists
+    // [1.] lastfileopen.txt
+    // [2.] playlist_id.txt displayname"playlist1"
+    // [3.] playlist_id.txt displayname
+    //ect.
+
+    string playlistFileName;
+    std::ifstream master(MASTER_FILE);
     string line;
-    std::ifstream inputFile(playlistFileName);
-    getline(inputFile, line);
-    if (line.length() == 0) {
-        savePlaylist(playlist, playlistFileName);
-    }
-    inputFile.close();
+    
+    if (getline(master, line)) {
+        playlistFileName = line;
 
-    //END OF FUTURE FUNCTION
-
+        master.close();
+    } else {
+    //if one doesn't exits or its corrupted, create new one
+        master.close();
+        std::ofstream master(MASTER_FILE);
+        master << DEFAULT_CURRENT << endl;
+        master.close();
+        playlistFileName = DEFAULT_CURRENT;
+    }   
 
 
 
@@ -122,9 +134,7 @@ void UniMusic::MusicPlayer::runInterface() {
             //Probably should do some error checking on this
 
             std::vector<string> songParts = delimitString(song,string(STANDARD_DELIMITER));
-            for (string part: songParts){
-                 cout << part << endl;
-            }
+        
 
             list[listInt] = songParts[0]+STANDARD_DELIMITER+songParts[1]+STANDARD_DELIMITER+url;
             savePlaylist(list, playlistFileName);
@@ -153,6 +163,44 @@ void UniMusic::MusicPlayer::runInterface() {
                 cout << "Play" << endl;
             }
         }
+        else if (response == "g") {//get all playlists from the user
+            std::vector<string> output;
+            si->getUserPlaylist(HIDDEN_SPOTIFY_USER_ID,&output);
+
+            string playlistFileName;    
+            std::ofstream master(MASTER_FILE, std::ios_base::app); //opens in append mode
+            
+            
+            //TODO
+            for (string id: output){
+                master << id+".txt" << endl;
+            }
+            master.close();
+        }
+
+        else if (response == "o") {//open a new file.
+            std::ifstream master(MASTER_FILE);
+            std::vector<string> filenames;
+            string line;
+            getline(master,line);
+            int i = 1;
+            while(getline(master,line)) {
+                cout << i++ <<" "+line<< endl;
+                filenames.push_back(line);
+            }
+            master.close();
+            int choice;
+            cout << "Choose a line by index: ";
+            std::cin >> choice;
+            choice--;
+            //TODO - do error checking here
+
+            playlistFileName = filenames[choice];
+            conditionalCreate(playlistFileName);
+            list = readPlaylist(playlistFileName);
+            playing = false;
+
+        }
 
 
 
@@ -160,6 +208,8 @@ void UniMusic::MusicPlayer::runInterface() {
 
     playing = false;
 }
+
+
 
 void UniMusic::MusicPlayer::startPlayer(){
 
@@ -265,6 +315,20 @@ int UniMusic::MusicPlayer::savePlaylist(std::vector<string> &vec, string &filena
     output.close();
     return 0;
 }
+
+void UniMusic::MusicPlayer::conditionalCreate(string filename){
+    string line;
+    std::ifstream inputFile(filename);
+    if (!getline(inputFile, line)) {
+        string id = filename.substr(0, filename.length() -4); //removing .txt
+        savePlaylist(id, filename);
+    }
+    inputFile.close();
+
+    
+    //END OF FUTURE FUNCTION
+}
+
 
 
 
