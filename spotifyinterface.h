@@ -31,6 +31,7 @@ class SpotifyInterface {
         //It provides a simpler way to interact with spotify api
         //However it expires after 30 mins, and needs to be regenerated. 
         //TODO - error handelling for exec commnad
+        //TOOD - setup regenerating access token
         string &getAccessToken(){return accessToken;};
 
         //TODO - all the following methods should have a way to check that their access token is valid.

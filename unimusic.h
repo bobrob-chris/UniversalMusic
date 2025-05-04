@@ -19,6 +19,8 @@ class MusicPlayer {
         //Creates a list of songs that the music player will and take the next one from the top.
         std::vector<string> currentSongList;
 
+        std::mutex  songListLock;
+
         //maintains the thread for the player so that the destructor can wait for it to finish before 
         //existing the program
         std::thread player;
@@ -40,6 +42,7 @@ class MusicPlayer {
         }
         ~MusicPlayer(){
             delete si, yi;
+            //player.join();
         }
 
         

@@ -61,7 +61,20 @@ void UniMusic::MusicPlayer::runInterface() {
     string playlist = HIDDEN_MY_PLAYLIST_ID_2;
 
     string playlistFileName = "playlist_test.txt";
-    savePlaylist(playlist, playlistFileName);
+    //check if playlist exitsts
+    //TODO - put in function
+    //START OF FUTURE FUNCTION
+    string line;
+    std::ifstream inputFile(playlistFileName);
+    getline(inputFile, line);
+    if (line.length() == 0) {
+        savePlaylist(playlist, playlistFileName);
+    }
+    inputFile.close();
+
+    //END OF FUTURE FUNCTION
+
+
 
 
     std::vector<string> list = readPlaylist(playlistFileName);
@@ -91,48 +104,33 @@ void UniMusic::MusicPlayer::runInterface() {
 
 
         if (response == "a") {//autoplay
-            int runtime;
-            time_t lastTime;
-            bool isUpdated = true;
-            while (true) {
-                if (isUpdated){
-                    lastTime = std::time(nullptr);
-                    cout << lastTime << endl;                   
-                    
-                    song = list[listInt];
+           //updateCurrentSontList with what you want to play (like spotifies queue)
+           std::vector<string>::const_iterator first = list.begin() + listInt;
+           std::vector<string>::const_iterator last = list.end();
 
-                    std::vector<string> songParts = delimitString(song,string("-"));
+           songListLock.lock();
+           currentSongList = std::vector<string>(first,last);
+           songListLock.unlock();
 
-                    string url;
-                    int result = yi->findSongUrl(songParts[0],songParts[1], &url);
-                    if (result == 1) {
-                        std::cerr << "FindSongUrl failed" << std::endl;
-                        return;
-                    }
-                    result = yi->getRuntime(url, &runtime);
-                    if (result == 1) {
-                        std::cerr << "Runtime failed" << std::endl;
-                        return;
-                    }
-                    isUpdated = false;
-                    yi->openUrl(url);
-
-                }
-
-                time_t currentTime = std::time(nullptr);
-                if (currentTime - lastTime > runtime+70){
-                    isUpdated = true;
-                    listInt++;
-
-                }
-
-
+           playing = true;
+           player = std::thread(&UniMusic::MusicPlayer::startPlayer, this);
+           cout << "Autoplaying..." << endl;
+        }
+        if (response == "p") {
+            if(playing) {
+                playing = false;
+                cout << "Pause" << endl;
+            } else if (currentSongList.size() != 0){
+                playing = true;
+                cout << "Play" << endl;
             }
         }
 
 
 
     } while (response != "j"); //janky, change later
+
+    playing = false;
 }
 
 
@@ -166,8 +164,67 @@ std::vector<string> UniMusic::MusicPlayer::readPlaylist(string filename){
     }
     return v;
 
+    inputFile.close();
+
 }
 
 
+void UniMusic::MusicPlayer::startPlayer(){
 
+    int listInt = 0;
+
+
+
+    int runtime;
+    time_t lastTime;
+    bool isUpdated = true;
+    while (playing) {
+        if (isUpdated){
+            lastTime = std::time(nullptr);
+
+            songListLock.lock();
+            if (listInt >= currentSongList.size()){
+                //at the end of the songs you have
+                playing = false;
+                currentSongList = std::vector<string>(); //clears queue
+                break;//for good measure;
+            }
+            string song = currentSongList[listInt];
+            songListLock.unlock();
+
+            std::vector<string> songParts = delimitString(song,string("-"));
+
+            string url;
+            int result = yi->findSongUrl(songParts[0],songParts[1], &url);
+            if (result == 1) {
+                std::cerr << "FindSongUrl failed" << std::endl;
+                return;
+            }
+            result = yi->getRuntime(url, &runtime);
+            if (result == 1) {
+                std::cerr << "Runtime failed" << std::endl;
+                return;
+            }
+            isUpdated = false;
+            yi->openUrl(url);
+
+        }
+
+        time_t currentTime = std::time(nullptr);
+        if (currentTime - lastTime > runtime+70){
+            isUpdated = true;
+            listInt++;
+
+            if (listInt >= currentSongList.size()){
+                //at the end of the songs you have
+                playing = false;
+                currentSongList = std::vector<string>(); //clears queue
+                break;//for good measure;
+            }
+
+        }
+
+
+    }
+}
 
