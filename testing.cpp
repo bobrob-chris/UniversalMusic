@@ -18,6 +18,7 @@
 
 using std::endl, std::cout;
 
+/*
 void testSuite() {
 
 
@@ -127,5 +128,5 @@ void testYoutubeURLSearch() {
     UniMusic::YoutubeInterface::openUrl(url);
 
 }
-
+*/
 

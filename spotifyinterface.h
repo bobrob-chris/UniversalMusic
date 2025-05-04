@@ -22,8 +22,9 @@ class SpotifyInterface {
         int generateAccessToken();
 
 
+
     public:
-        SpotifyInterface(string clientId, string clientSecret);
+        SpotifyInterface(const string clientId, const string clientSecret);
         ~SpotifyInterface() = default;
 
         //The Access Token is generated upon creation
@@ -37,7 +38,7 @@ class SpotifyInterface {
 
         //update -- SO MUCH ERROR HANDLING
 
-        //This method  grabs a playlist given a playlistId and returns it in output, returns 0, if success, 1 if error
+        //This method  grabs a playlist given a playlistId and returns it in output, returns 0, if success, 1 if error, 2 if no songs found
         //The output is every song in songName-artist delimited by newlines
         int getPlaylist(string playlistId, int maxSongs, string *output); 
 

@@ -5,8 +5,7 @@
 
 
 
-
-UniMusic::SpotifyInterface::SpotifyInterface(string clientId, string clientSecret){
+UniMusic::SpotifyInterface::SpotifyInterface(const string clientId, const string clientSecret){
     curlWrapper = CommandWI();
     this->clientId = clientId;
     this->clientSecret = clientSecret;
@@ -78,7 +77,9 @@ int UniMusic::SpotifyInterface::getPlaylist(string playlistId, int maxSongs, str
 
 
     size_t addedPos = requestResult.find("added_at");
-    std::cout << (addedPos != string::npos) << std::endl;
+    if (addedPos == string::npos) {
+        return 2;
+    }
 
     while (addedPos != string::npos) {//while added_at is still found
 

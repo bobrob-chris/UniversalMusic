@@ -47,60 +47,26 @@ using std::endl;
 
 
 
-
-
-//TODO - make spotify interface global so there's only one of them
 int main(){
     //testSuite();
-    runSimulator();
+    UniMusic::MusicPlayer m = UniMusic::MusicPlayer(HIDDEN_SPOTIFY_CLIENT_ID,HIDDEN_SPOTIFY_CLIENT_SECRET,HIDDEN_YOUTUBE_API_KEY);
+
+
+    m.runInterface();
 
 }
 
 
-
-
-
-
-void savePlaylist(string playlistid, string filename){
-    UniMusic::SpotifyInterface s = UniMusic::SpotifyInterface(HIDDEN_SPOTIFY_CLIENT_ID, HIDDEN_SPOTIFY_CLIENT_SECRET);
-
-    std::ofstream output(filename);
-
-    string playlistOutput;
-    int result = s.getPlaylist(playlistid, 200, &playlistOutput);
-    if (result != 0) {
-        std::cerr << "getPlaylist failed" << std::endl;
-        return;
-    }
-    output << playlistOutput;
-
-    output.close();
-}
-
-std::vector<string> readPlaylist(string filename){
-    //TODO - error checking
-    string line;
-    std::ifstream inputFile(filename);
-
-    std::vector<string> v;
-
-    while (getline (inputFile, line)) {
-        v.push_back(line);
-    }
-    return v;
-
-}
-
-
-//I need a function that's going to let me scroll through a list and choose songs via numbers.
-//commands keys are i-up, k-down, l-pick, j,exit
-void runSimulator(){
+void UniMusic::MusicPlayer::runInterface() {
     string playlist = HIDDEN_MY_PLAYLIST_ID_2;
 
     string playlistFileName = "playlist_test.txt";
     savePlaylist(playlist, playlistFileName);
 
+
     std::vector<string> list = readPlaylist(playlistFileName);
+    //check list
+    if (list.size() == 0) {cout << "No songs" << endl; return;}
     int listInt = 0;
     string response = string();
     do {
@@ -115,12 +81,12 @@ void runSimulator(){
         if (response == "l") {
             std::vector<string> songParts = delimitString(song,string("-"));
             string url;
-            int result = UniMusic::YoutubeInterface::findSongUrl(songParts[0],songParts[1], HIDDEN_YOUTUBE_API_KEY, &url);
+            int result = yi->findSongUrl(songParts[0],songParts[1], &url);
             if (result == 1) {
                 std::cerr << "FindSongUrl failed" << std::endl;
                 return;
             }
-            UniMusic::YoutubeInterface::openUrl(url);
+            yi->openUrl(url);
         }
 
 
@@ -138,18 +104,18 @@ void runSimulator(){
                     std::vector<string> songParts = delimitString(song,string("-"));
 
                     string url;
-                    int result = UniMusic::YoutubeInterface::findSongUrl(songParts[0],songParts[1], HIDDEN_YOUTUBE_API_KEY, &url);
+                    int result = yi->findSongUrl(songParts[0],songParts[1], &url);
                     if (result == 1) {
                         std::cerr << "FindSongUrl failed" << std::endl;
                         return;
                     }
-                    result = UniMusic::YoutubeInterface::getRuntime(url, HIDDEN_YOUTUBE_API_KEY, &runtime);
+                    result = yi->getRuntime(url, &runtime);
                     if (result == 1) {
                         std::cerr << "Runtime failed" << std::endl;
                         return;
                     }
                     isUpdated = false;
-                    UniMusic::YoutubeInterface::openUrl(url);
+                    yi->openUrl(url);
 
                 }
 
@@ -168,6 +134,40 @@ void runSimulator(){
 
     } while (response != "j"); //janky, change later
 }
+
+
+
+
+
+
+
+void UniMusic::MusicPlayer::savePlaylist(string playlistid, string filename){
+    std::ofstream output(filename);
+    string playlistOutput;
+    int result = si->getPlaylist(playlistid, 200, &playlistOutput);
+    if (result != 0) {
+        std::cerr << "getPlaylist failed" << std::endl;
+        return;
+    }
+    output << playlistOutput;
+
+    output.close();
+}
+
+std::vector<string> UniMusic::MusicPlayer::readPlaylist(string filename){
+    //TODO - error checking
+    string line;
+    std::ifstream inputFile(filename);
+
+    std::vector<string> v;
+
+    while (getline (inputFile, line)) {
+        v.push_back(line);
+    }
+    return v;
+
+}
+
 
 
 

@@ -19,8 +19,10 @@ using std::string;
 
 
 
+
+
 //harder to implemnt of the two
-int UniMusic::YoutubeInterface::findSongUrl(string &name, string &artist,const string &apiKey, string *output) {
+int UniMusic::YoutubeInterface::findSongUrl(string &name, string &artist, string *output) {
     //search bar query: https://www.youtube.com/results?search_query=cheri+cher+lady+modern+talking+vevo
     //returns 
 
@@ -109,7 +111,7 @@ void UniMusic::YoutubeInterface::openUrl(string &url) {
     }
 }
 
-int UniMusic::YoutubeInterface::getRuntime(string &id,const string &apiKey, int *output) {
+int UniMusic::YoutubeInterface::getRuntime(string &id, int *output) {
     //https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=url
 
     string key = "key="+apiKey;
