@@ -37,7 +37,7 @@ int UniMusic::SpotifyInterface::generateAccessToken(){
     return 0;
 }
 
-int UniMusic::SpotifyInterface::getPlaylist(string playlistId, int maxSongs, string *output) {
+int UniMusic::SpotifyInterface::getPlaylist(string playlistId, int maxSongs, string *output, string*name) {
     string curlWrapperResult = string();
     string requestResult = string();
     string final_output = string();
@@ -64,6 +64,8 @@ int UniMusic::SpotifyInterface::getPlaylist(string playlistId, int maxSongs, str
         requestResult += curlWrapperResult;
 
     }
+
+    if (name != nullptr) findToken(requestResult,"\"name\"",name);
     
     //can delimit songs in playlist by added_at
     //then find "artists"
@@ -132,7 +134,7 @@ int UniMusic::SpotifyInterface::getSong(string songId, string *output) {
 }
 
 
-int UniMusic::SpotifyInterface::getUserPlaylist(const string &user, std::vector<string> *output){
+int UniMusic::SpotifyInterface::getUserPlaylists(const string &user, std::vector<string> *output){
     map<string,string> m = map<string, string>();
     m.insert({"Authorization","Bearer "+accessToken});
 
@@ -140,6 +142,7 @@ int UniMusic::SpotifyInterface::getUserPlaylist(const string &user, std::vector<
     string requestResult;
     int result = curlWrapper.sendRequest("https://api.spotify.com/v1/users/"+user+"/playlists", m, UniMusic::Get, string(), &requestResult);
     //std::cout << requestResult << std::endl; //TODO - delete later
+
 
 
     //THIs loop is so janky but it works I suppose
@@ -168,5 +171,29 @@ int UniMusic::SpotifyInterface::getUserPlaylist(const string &user, std::vector<
     return 0;
 
 }
+
+int UniMusic::SpotifyInterface::getPlaylistName(string playlistId, string*name){
+    string curlWrapperResult = string();
+    string requestResult = string();
+
+
+    map<string,string> m = map<string, string>();
+    m.insert({"Authorization","Bearer "+accessToken});
+
+
+
+    int result = curlWrapper.sendRequest("https://api.spotify.com/v1/playlists/"+playlistId, m, UniMusic::Get, string(), &requestResult);
+    if (result != 0) {
+        return 1;
+    }
+
+    if (name != nullptr) {
+        findToken(requestResult,"\"name\"",name);
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
 
 

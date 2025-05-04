@@ -165,7 +165,7 @@ void UniMusic::MusicPlayer::runInterface() {
         }
         else if (response == "g") {//get all playlists from the user
             std::vector<string> output;
-            si->getUserPlaylist(HIDDEN_SPOTIFY_USER_ID,&output);
+            si->getUserPlaylists(HIDDEN_SPOTIFY_USER_ID,&output);
 
             string playlistFileName;    
             std::ofstream master(MASTER_FILE, std::ios_base::app); //opens in append mode
@@ -173,7 +173,9 @@ void UniMusic::MusicPlayer::runInterface() {
             
             //TODO
             for (string id: output){
-                master << id+".txt" << endl;
+                string name;
+                si->getPlaylistName(id, &name);
+                master << id+".txt"+STANDARD_DELIMITER+name<< endl;
             }
             master.close();
         }
@@ -185,8 +187,9 @@ void UniMusic::MusicPlayer::runInterface() {
             getline(master,line);
             int i = 1;
             while(getline(master,line)) {
-                cout << i++ <<" "+line<< endl;
-                filenames.push_back(line);
+                std::vector<string> parts = delimitString(line,string(STANDARD_DELIMITER));
+                cout << i++ <<" "+parts[1]<< endl;
+                filenames.push_back(parts[0]);
             }
             master.close();
             int choice;
@@ -199,6 +202,7 @@ void UniMusic::MusicPlayer::runInterface() {
             conditionalCreate(playlistFileName);
             list = readPlaylist(playlistFileName);
             playing = false;
+            
 
         }
 
@@ -207,6 +211,21 @@ void UniMusic::MusicPlayer::runInterface() {
     } while (response != "j"); //janky, change later
 
     playing = false;
+
+    //let's see, 
+    //on close, put the currently played filename on top
+    string saved;
+    std::ifstream finalMaster(MASTER_FILE);
+    getline(finalMaster, line); //forget first line
+    while (getline(finalMaster, line)) {
+        saved += line+"\n";
+    }
+    master.close();
+
+    std::ofstream newMaster(MASTER_FILE);
+    newMaster << playlistFileName << endl;
+    newMaster << saved << endl;
+    newMaster.close();
 }
 
 
@@ -294,7 +313,8 @@ std::vector<string> UniMusic::MusicPlayer::readPlaylist(string filename){
 void UniMusic::MusicPlayer::savePlaylist(string playlistid, string filename){
     std::ofstream output(filename);
     string playlistOutput;
-    int result = si->getPlaylist(playlistid, 200, &playlistOutput);
+    string name;
+    int result = si->getPlaylist(playlistid, 200, &playlistOutput,&name);
     if (result != 0) {
         std::cerr << "getPlaylist failed" << std::endl;
         return;
@@ -321,9 +341,13 @@ void UniMusic::MusicPlayer::conditionalCreate(string filename){
     std::ifstream inputFile(filename);
     if (!getline(inputFile, line)) {
         string id = filename.substr(0, filename.length() -4); //removing .txt
+        inputFile.close();
+
         savePlaylist(id, filename);
+    } else {
+        inputFile.close();
+
     }
-    inputFile.close();
 
     
     //END OF FUTURE FUNCTION

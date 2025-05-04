@@ -41,13 +41,15 @@ class SpotifyInterface {
 
         //This method  grabs a playlist given a playlistId and returns it in output, returns 0, if success, 1 if error, 2 if no songs found
         //The output is every song in songName-artist delimited by newlines
-        int getPlaylist(string playlistId, int maxSongs, string *output); 
+        int getPlaylist(string playlistId, int maxSongs, string *output, string *name); 
+
+        int getPlaylistName(string playlistId, string*name);
 
         //This method  grabs a songName and returns it in output, returns 0, if success, 1 if error
         int getSong(string songId, string *output);
 
         //This method grabs all the oublic playlistIds for the given user and puts it in output, 
-        int getUserPlaylist(const string &user, std::vector<string> *output);
+        int getUserPlaylists(const string &user, std::vector<string> *output);
 };
 
 
