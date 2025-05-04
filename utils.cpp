@@ -51,22 +51,26 @@ int UniMusic::CommandWI::sendRequest(string url, map<string, string> headers, Me
 }
 
 std::vector<string> delimitString(string &input, string &delimiter){
-    string copy = input;
+    string copy = string(input);
     std::vector<string> result;
     size_t pos = copy.find(delimiter);
     if (pos == string::npos) {
+        result.push_back(copy);
         return result;
     }
-    size_t oldPos = 0;
-    do {
-        string seg = copy.substr(oldPos, pos);
+
+    while (pos != string::npos){
+
+        string seg = copy.substr(0,pos);
         result.push_back(seg);
         copy = copy.substr(pos+1);
-        oldPos = pos;
+
         pos = copy.find(delimiter);
-    } while (pos != string::npos);
+    } 
+
 
     result.push_back(copy);
+
     return result;
 
 }

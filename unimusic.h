@@ -72,6 +72,10 @@ class MusicPlayer {
         void savePlaylist(string playlistid, string filename);
 
 
+        //Save a playlist given a vector string of the different song entries.
+        int savePlaylist(std::vector<string> &vec, string &filename);
+
+
         //Returns a playlist given a filename, with each entry in the returned vector being
         //"[name]"-"[artist]". Additionally if date is supplied 
         std::vector<string> readPlaylist(string filename);

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stack>
 
+#define STANDARD_DELIMITER ","
 
 
 UniMusic::SpotifyInterface::SpotifyInterface(const string clientId, const string clientSecret){
@@ -113,7 +114,7 @@ int UniMusic::SpotifyInterface::getPlaylist(string playlistId, int maxSongs, str
 
 
         //final_output += removeQuotation(songName)+"-"+removeQuotation(artistName) +"\n";//+"-"+ removeQuotation(duration)
-        final_output += songName+"-"+artistName +"\n";//+"-"+ removeQuotation(duration)
+        final_output += songName+STANDARD_DELIMITER+artistName +"\n";//+"-"+ removeQuotation(duration)
 
 
     }  
