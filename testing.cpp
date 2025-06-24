@@ -13,7 +13,7 @@
 #include "config.h"
 
 #include "testing.h"
-#include "unimusic.h"
+#include "player.h"
 
 
 using std::endl, std::cout;
