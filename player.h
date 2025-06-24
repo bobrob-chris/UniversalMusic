@@ -68,8 +68,7 @@ class MusicPlayer {
         void close();
 
         //Player Buttons to interface with Tina's setup
-        
-        void playSong();
+        void playSong(int index);
         
 
         //Runs interface from console initially, but eventually from interface Tina's making

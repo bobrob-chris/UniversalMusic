@@ -93,6 +93,28 @@ void UniMusic::MusicPlayer::close() {
     newMaster.close();
 }
 
+void UniMusic::MusicPlayer::playSong(int index) {
+    if (index >= displayList.size() || index < 0) return;
+
+    std::vector<string> songParts = delimitString(displayList[index],string(STANDARD_DELIMITER));
+    string url;
+    //heuristic goes like this
+    //song-artist-url
+    
+    if (songParts.size() >= 3) { //should be 2 or greater than three
+        url = songParts[2];
+    } else {
+        int result = yi->findSongUrl(songParts[0],songParts[1], &url);
+        if (result == 1) {
+            std::cerr << "FindSongUrl failed" << std::endl;
+            return;
+        }
+        displayList[index] = songParts[0]+STANDARD_DELIMITER+songParts[1]+STANDARD_DELIMITER+url;
+        savePlaylist(displayList, currentPlaylistFileName);
+
+    }
+    yi->openUrl(url);
+}
 
 
 void UniMusic::MusicPlayer::runInterface() {

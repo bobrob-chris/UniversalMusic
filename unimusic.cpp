@@ -305,6 +305,7 @@ int main()
 				if (currSong > 0 && Playing) {
 					currSong -= 1;
 					UpdateSongArtist(currSong, m.displayList);
+                    m.playSong(currSong);
 					string first = "Now Playing: ";
 					topDisplayText = first + topDisplayText;
 				}
@@ -314,6 +315,7 @@ int main()
 			if (PlayPressed) {
 				if (!Playing && currSong != -1) {
 					string first = "Now Playing: ";
+                    m.playSong(currSong);
 					topDisplayText = first + topDisplayText;
 					Playing = true;
 				}
@@ -332,6 +334,7 @@ int main()
 				if (Playing && currSong < m.displayList.size()-1) {
 					currSong += 1;
 					UpdateSongArtist(currSong, m.displayList);
+                    m.playSong(currSong);
 					string first = "Now Playing: ";
 					topDisplayText = first + topDisplayText;
 				}
