@@ -13,6 +13,9 @@
 **********************************************************************************************/
 
 #include "raylib.h"
+//absolutely essential that these go above the line "define raygui_implementation"
+#include "player.h"
+#include "config.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
@@ -23,7 +26,9 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+
 using namespace std;
+
 
 
 //----------------------------------------------------------------------------------
@@ -69,6 +74,10 @@ int main()
     // Initialization
     //---------------------------------------------------------------------------------------
 
+    // backend
+    UniMusic::MusicPlayer m = UniMusic::MusicPlayer(HIDDEN_SPOTIFY_CLIENT_ID,HIDDEN_SPOTIFY_CLIENT_SECRET, HIDDEN_YOUTUBE_API_KEY);
+    m.setUp();
+
 	// screen
 	float sWidth = GetScreenWidth();
 	float screenCenterX = sWidth / 2;
@@ -93,14 +102,14 @@ int main()
 	// Music Queue
 	int musicFontSize = 30;
 	float musicHeight = 50;
-	vector<bool> songsPressed(songs.size());
+	vector<bool> songsPressed(m.displayList.size());
 	bool Playing = false;
 	int currSong = -1;
 	
 	// Scroll Panel
 	float scrollBoxY = 115;
 	float maxWidth = 400;
-	float contentHeight = musicHeight * songs.size() + 20; // 20 for padding
+	float contentHeight = musicHeight * m.displayList.size() + 20; // 20 for padding
 	Rectangle PanelView = { 0, 0, 0, 0 };
     Vector2 PanelScrollOffset = { 0, 0 };
     Vector2 PanelBoundsOffset = { 0, 0 };
@@ -153,27 +162,39 @@ int main()
 			// scroll panel
  			GuiScrollPanel(PanelRec, NULL, PanelContent, &PanelScrollOffset, &PanelView);
             BeginScissorMode(PanelView.x, PanelView.y, PanelView.width, PanelView.height);
-				for (float i = 0; i < songs.size(); i++) {
-					const string del = "-";
-					string songText = ReplaceString(songs[i], del);
-					float songWidth = songText.length() * 12.5;
-					if (songWidth > maxWidth) maxWidth = songWidth + 10;
-					Rectangle musicRec = { PanelRec.x + PanelScrollOffset.x, PanelRec.y + PanelScrollOffset.y + (musicHeight*i), PanelContent.width, musicHeight};
-					bool temp = false;
-					if (currSong == i) {
-						temp = true;
-					}
-					GuiMusicItem(musicRec, songText.c_str(), &temp, musicFontSize);
-					if (temp == true && currSong != i) {
-						currSong = i;
-						Playing = false;
-						UpdateSongArtist(currSong);
-					} else if (temp == false && currSong == i) {
-						Playing = false;
-						currSong = -1;
-						topDisplayText = "-----";
-					}
-				}
+            
+           
+
+      
+            for (int i = 0; i < m.displayList.size(); i++){
+                string songText = ReplaceString(m.displayList[i], STANDARD_DELIMITER);
+
+            /*
+            for (float i = 0; i < songs.size(); i++) {
+                const string del = "-";
+                string songText = ReplaceString(songs[i], del);
+            */
+                float songWidth = songText.length() * 12.5;
+                if (songWidth > maxWidth) maxWidth = songWidth + 10;
+                Rectangle musicRec = { PanelRec.x + PanelScrollOffset.x, PanelRec.y + PanelScrollOffset.y + (musicHeight*i), PanelContent.width, musicHeight};
+                bool temp = false;
+                if (currSong == i) {
+                    temp = true;
+                }
+                GuiMusicItem(musicRec, songText.c_str(), &temp, musicFontSize);
+                if (temp == true && currSong != i) {
+                    currSong = i;
+                    Playing = false;
+                    UpdateSongArtist(currSong, m.displayList);
+                } else if (temp == false && currSong == i) {
+                    Playing = false;
+                    currSong = -1;
+                    topDisplayText = "-----";
+                }
+            }
+            
+            
+            
 			EndScissorMode();
 
 			// top bar
@@ -202,7 +223,7 @@ int main()
             GuiUnlock();
 			
 			
-			// open top tool bar modals
+			// open top tool bar models
 			int result;			
 			// File
 			switch (f) {
@@ -283,7 +304,7 @@ int main()
 			if (PrevPressed) {
 				if (currSong > 0 && Playing) {
 					currSong -= 1;
-					UpdateSongArtist(currSong);
+					UpdateSongArtist(currSong, m.displayList);
 					string first = "Now Playing: ";
 					topDisplayText = first + topDisplayText;
 				}
@@ -308,9 +329,9 @@ int main()
 			};
 			if (GuiButton(Rectangle{ screenCenterX+50, sHeight-70, 50, 50 }, GuiIconText(ICON_PLAYER_NEXT, ""))) NextPressed = true;
 			if (NextPressed) {
-				if (Playing && currSong < songs.size()-1) {
+				if (Playing && currSong < m.displayList.size()-1) {
 					currSong += 1;
-					UpdateSongArtist(currSong);
+					UpdateSongArtist(currSong, m.displayList);
 					string first = "Now Playing: ";
 					topDisplayText = first + topDisplayText;
 				}
@@ -325,7 +346,7 @@ int main()
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
-
+    m.close();
     return 0;
 }
 
@@ -338,11 +359,11 @@ int main()
 //------------------------------------------------------------------------------------
 
 // Updates current song and artist text; should only be used when currSong gets updated
-void UpdateSongArtist(int i) {
-	stringstream ss(songs[i]);
+void UpdateSongArtist(int i, vector<string> list) {
+	stringstream ss(list[i]);
 	string title, artist;
-	getline(ss, title, '-');
-	getline(ss, artist, '-');
+	getline(ss, title, STANDARD_DELIMITER[0]);
+	getline(ss, artist, STANDARD_DELIMITER[0]);
 	string second = " by ";
 	topDisplayText = title + second + artist;
 }
@@ -354,10 +375,15 @@ string ReplaceString(string subject, const string& search) {
 	subject.replace(pos, search.length(), " - ");
 	pos += 3;
 	pos = subject.find(search, pos);
-	subject.replace(pos, search.length(), "..........[");
-	pos += 11;
-	pos = subject.find(search, pos);
-	subject.replace(pos, search.length(), "]  ");
+    if (pos != string::npos) {
+        subject.replace(pos, search.length(), "..........[");
+        subject.append("]");
+        /*
+        pos += 11;
+        pos = subject.find(search, pos);
+        subject.replace(pos, search.length(), "]  ");
+        */
+    }
 	return subject;
 }
 

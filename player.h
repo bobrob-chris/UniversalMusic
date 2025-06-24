@@ -7,6 +7,9 @@
 #include "spotifyinterface.h"
 #include "youtubeinterface.h"
 
+#define STANDARD_DELIMITER ","
+
+
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 

@@ -16,7 +16,6 @@
 
 #include "player.h"
 
-#define STANDARD_DELIMITER ","
 
 #define MASTER_FILE "mf.txt"
 
@@ -72,7 +71,7 @@ void UniMusic::MusicPlayer::setUp() {
 
     displayList= readPlaylist(currentPlaylistFileName);
     //check 
-    if (displayList.size() == 0) {cout << "No songs" << endl; return;}
+    if (displayList.size() == 0) cout << "No songs" << endl;
 }
 
 void UniMusic::MusicPlayer::close() {
