@@ -36,19 +36,6 @@ using namespace std;
 //----------------------------------------------------------------------------------
 Rectangle PanelRec;
 
-vector<string> songs = {"Good Day-IU-4:00-https://www.youtube.com/watch?v=cRdvzzWIfkA", 
-					   "Sunflower-Post Malone, Swae Lee-2:41-https://www.youtube.com/watch?v=ApXoWvfEYVU", 
-					   "23-IU-3:14-https://www.youtube.com/watch?v=IbhWNjvh1u8", 
-					   "Perfect Man-SHINHWA-3:25-https://www.youtube.com/watch?v=tccg1CeSCTU", 
-					   "Run BTS-BTS-3:24-https://www.youtube.com/watch?v=a4YwJCZRh5M", 
-					   "Fallin' (Adrenaline)-Why Don't We-3:33-https://www.youtube.com/watch?v=MU0BgB8N1B8", 
-					   "Somebody That I Used To Know-Gotye (feat. Kimbra)-2:41-https://www.youtube.com/watch?v=ApXoWvfEYVU", 
-					   "BIRDS OF A FEATHER-Billie Eilish-3:50-https://www.youtube.com/watch?v=V9PVRfjEBTI", 
-					   "Summertime Sadness-PLana Del Rey-4:25-https://www.youtube.com/watch?v=ApXoWvfEYVU", 
-					   "Sweater Weather-The Neighbourhood-4:13-https://www.youtube.com/watch?v=GCdwKhTtNNw&pp=0gcJCb4JAYcqIYzv", 
-					   "Love Me Again-John Newman-3:56-https://www.youtube.com/watch?v=CfihYWRWRTQ", 
-					   "blue-yung kai-3:42-https://www.youtube.com/watch?v=IpFX2vq8HKw", 
-					   "Counting Stars-OneRepublic-4:43-https://www.youtube.com/watch?v=hT_nvWreIhg"};
 
 string topDisplayText = "-----";
 
@@ -121,9 +108,12 @@ int main()
 	bool PausePressed = false;
 	bool NextPressed = false;
 	bool PrevPressed = false;
+
+    // Open Menu Scroll Panel
+
 	
 	// Initialize Window
-    InitWindow(screenWidth, screenHeight, "Music App");
+    InitWindow(screenWidth, screenHeight, "UniMusic");
 	
 	// Set window and default style
 	GuiLoadStyleDark();
@@ -159,43 +149,46 @@ int main()
 
 			DrawText(topDisplayText.c_str(), leftMargin, displayTextY, displayTextFontSize, GetColor(GuiGetStyle(DEFAULT, TEXT)));
 			
+
 			// scroll panel
- 			GuiScrollPanel(PanelRec, NULL, PanelContent, &PanelScrollOffset, &PanelView);
-            BeginScissorMode(PanelView.x, PanelView.y, PanelView.width, PanelView.height);
+            if (f == -1 && e == -1 && i == -1 && v == -1){
+                GuiScrollPanel(PanelRec, NULL, PanelContent, &PanelScrollOffset, &PanelView);
+                BeginScissorMode(PanelView.x, PanelView.y, PanelView.width, PanelView.height);
+                
             
-           
 
-      
-            for (int i = 0; i < m.displayList.size(); i++){
-                string songText = ReplaceString(m.displayList[i], STANDARD_DELIMITER);
+        
+                for (int i = 0; i < m.displayList.size(); i++){
+                    string songText = ReplaceString(m.displayList[i], STANDARD_DELIMITER);
 
-            /*
-            for (float i = 0; i < songs.size(); i++) {
-                const string del = "-";
-                string songText = ReplaceString(songs[i], del);
-            */
-                float songWidth = songText.length() * 12.5;
-                if (songWidth > maxWidth) maxWidth = songWidth + 10;
-                Rectangle musicRec = { PanelRec.x + PanelScrollOffset.x, PanelRec.y + PanelScrollOffset.y + (musicHeight*i), PanelContent.width, musicHeight};
-                bool temp = false;
-                if (currSong == i) {
-                    temp = true;
+                /*
+                for (float i = 0; i < songs.size(); i++) {
+                    const string del = "-";
+                    string songText = ReplaceString(songs[i], del);
+                */
+                    float songWidth = songText.length() * 12.5;
+                    if (songWidth > maxWidth) maxWidth = songWidth + 10;
+                    Rectangle musicRec = { PanelRec.x + PanelScrollOffset.x, PanelRec.y + PanelScrollOffset.y + (musicHeight*i), PanelContent.width, musicHeight};
+                    bool temp = false;
+                    if (currSong == i) {
+                        temp = true;
+                    }
+                    GuiMusicItem(musicRec, songText.c_str(), &temp, musicFontSize);
+                    if (temp == true && currSong != i) {
+                        currSong = i;
+                        Playing = false;
+                        UpdateSongArtist(currSong, m.displayList);
+                    } else if (temp == false && currSong == i) {
+                        Playing = false;
+                        currSong = -1;
+                        topDisplayText = "-----";
+                    }
                 }
-                GuiMusicItem(musicRec, songText.c_str(), &temp, musicFontSize);
-                if (temp == true && currSong != i) {
-                    currSong = i;
-                    Playing = false;
-                    UpdateSongArtist(currSong, m.displayList);
-                } else if (temp == false && currSong == i) {
-                    Playing = false;
-                    currSong = -1;
-                    topDisplayText = "-----";
-                }
+                
+                
+                
+                EndScissorMode();
             }
-            
-            
-            
-			EndScissorMode();
 
 			// top bar
 			if (FilePressed) GuiLock();
@@ -238,8 +231,10 @@ int main()
                 if (result >= 0) f = -1;
 				break;
 			  case 3:
-                result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                    "#191#Open", "Hi! This is a message!", "Nice;Cool");
+                result = GuiOpenMenu(Rectangle{leftMargin, toolBarY, sWidth-90, sHeight-100}, &m);
+
+                //result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
+                //    "#191#Open", "Hi! This is a message!", "Nice;Cool");
                 if (result >= 0) f = -1;
 				break;
 			  case 4:
@@ -390,6 +385,124 @@ string ReplaceString(string subject, const string& search) {
 	return subject;
 }
 
+int GuiOpenMenu(Rectangle bounds, UniMusic::MusicPlayer *m){
+    const char *title = "Open Menu";
+    const char *message = "To be added";
+    const char *buttons = "OPEN";
+
+    #if !defined(RAYGUI_MESSAGEBOX_BUTTON_HEIGHT)
+        #define RAYGUI_MESSAGEBOX_BUTTON_HEIGHT    24
+    #endif
+    #if !defined(RAYGUI_MESSAGEBOX_BUTTON_PADDING)
+        #define RAYGUI_MESSAGEBOX_BUTTON_PADDING   12
+    #endif
+
+    int result = -1;    // Returns clicked button from buttons list, 0 refers to closed window button
+
+    int buttonCount = 0;
+    const char **buttonsText = GuiTextSplit(buttons, ';', &buttonCount, NULL);
+    Rectangle buttonBounds = { 0 };
+    buttonBounds.x = bounds.x + RAYGUI_MESSAGEBOX_BUTTON_PADDING;
+    buttonBounds.y = bounds.y + bounds.height - RAYGUI_MESSAGEBOX_BUTTON_HEIGHT - RAYGUI_MESSAGEBOX_BUTTON_PADDING;
+    buttonBounds.width = (bounds.width - RAYGUI_MESSAGEBOX_BUTTON_PADDING*(buttonCount + 1))/buttonCount;
+    buttonBounds.height = RAYGUI_MESSAGEBOX_BUTTON_HEIGHT;
+
+    //int textWidth = GetTextWidth(message) + 2;
+
+    Rectangle textBounds = { 0 };
+    textBounds.x = bounds.x + RAYGUI_MESSAGEBOX_BUTTON_PADDING;
+    textBounds.y = bounds.y + RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT + RAYGUI_MESSAGEBOX_BUTTON_PADDING;
+    textBounds.width = bounds.width - RAYGUI_MESSAGEBOX_BUTTON_PADDING*2;
+    textBounds.height = bounds.height - RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT - 3*RAYGUI_MESSAGEBOX_BUTTON_PADDING - RAYGUI_MESSAGEBOX_BUTTON_HEIGHT;
+
+    // Draw control
+    //--------------------------------------------------------------------
+    if (GuiWindowBox(bounds, title)) result = 0;
+
+    int prevTextAlignment = GuiGetStyle(LABEL, TEXT_ALIGNMENT);
+    
+    //GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
+    //GuiLabel(textBounds, message);
+    //Set up scroll panel for potential files
+    
+    //Get File Options
+    
+    std::vector<string> fileOptions = m->getAllFileNames();
+    int curFileIndex = -1;
+
+    // File Queue
+	int fileFontSize = 30;
+	float FileIconHeight = 50;
+	vector<bool> songsPressed(fileOptions.size());
+	
+    float leftMargin = 20;
+    float width = bounds.width;
+
+    // File Scroll Panel
+	float scrollBoxY = 115;
+	float maxWidth = 400;
+	float contentHeight = FileIconHeight * fileOptions.size() + 20; // 20 for padding
+	Rectangle FilePanelView = { 0, 0, 0, 0 };
+    Vector2 FilePanelScrollOffset = { 0, 0 };
+    Vector2 FilePanelBoundsOffset = { 0, 0 };
+	//Rectangle FilePanelRec = Rectangle{ leftMargin, scrollBoxY, bounds.width - FilePanelBoundsOffset.x - 50, bounds.height - FilePanelBoundsOffset.y - 200};
+	Rectangle FilePanelContent = Rectangle{ leftMargin, scrollBoxY, bounds.width - FilePanelBoundsOffset.x - 80, contentHeight};
+
+    // Draw Panel
+    GuiScrollPanel(PanelRec, NULL, FilePanelContent, &FilePanelScrollOffset, &FilePanelView);
+    BeginScissorMode(FilePanelView.x, FilePanelView.y, FilePanelView.width, FilePanelView.height);
+    
+    
+
+
+    for (int i = 0; i < fileOptions.size(); i++){
+        string fileText = fileOptions[i];
+        float fileWidth = fileText.length() * 12.5;
+        if (fileWidth > maxWidth) maxWidth = fileWidth + 10;
+        Rectangle fileRec = { bounds.x + FilePanelScrollOffset.x, bounds.y + FilePanelScrollOffset.y + (FileIconHeight*i), FilePanelContent.width, contentHeight};
+        bool temp = false;
+        if (curFileIndex == i) {
+            temp = true;
+        }
+
+        string fileName = fileText.substr(fileText.find(',')+1);
+        cout << fileName << endl;
+
+        GuiFileItem(fileRec, fileText.c_str(), &temp, fileFontSize);
+        if (temp == true && curFileIndex!= i) {
+            curFileIndex = i;
+            
+        } else if (temp == false && curFileIndex== i) {
+            curFileIndex  = -1;
+        }
+    }
+    
+    
+    
+    EndScissorMode();
+
+
+
+    
+    
+    GuiSetStyle(LABEL, TEXT_ALIGNMENT, prevTextAlignment);
+
+    prevTextAlignment = GuiGetStyle(BUTTON, TEXT_ALIGNMENT);
+    GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
+
+    for (int i = 0; i < buttonCount; i++)
+    {
+        if (GuiButton(buttonBounds, buttonsText[i])) result = i + 1;
+        buttonBounds.x += (buttonBounds.width + RAYGUI_MESSAGEBOX_BUTTON_PADDING);
+    }
+
+    GuiSetStyle(BUTTON, TEXT_ALIGNMENT, prevTextAlignment);
+    //--------------------------------------------------------------------
+
+    return result;
+}
+
+
 // Modal for functions control; this is currently a generic message box, will need to be individually defined later :)
 int GuiUtilityModal(Rectangle bounds, const char *title, const char *message, const char *buttons)
 {
@@ -488,6 +601,53 @@ void GuiMusicItem(Rectangle bounds, const char *text, bool *active, int fontSize
     if (state == STATE_FOCUSED) GuiTooltip(bounds);
 
 }
+
+// File Item control, returns true when clicked
+void GuiFileItem(Rectangle bounds, const char *text, bool *active, int fontSize)
+{
+    GuiState state = guiState;
+
+    bool temp = false;
+    if (active == NULL) active = &temp;
+
+    // Update control
+    //--------------------------------------------------------------------
+    if ((PanelRec.y < bounds.y + bounds.height/2) && (bounds.y + bounds.height/2 < PanelRec.y + PanelRec.height)
+		&& (state != STATE_DISABLED) && !guiLocked && !guiControlExclusiveMode)
+    {
+        Vector2 mousePoint = GetMousePosition();
+
+        // Check toggle button state
+        if (CheckCollisionPointRec(mousePoint, bounds) && !FilePressed && !EditPressed && !ImportPressed && !ViewPressed
+			&& f == -1 && e == -1 && i == -1 && v == -1)
+        {
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) state = STATE_PRESSED;
+            else if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
+            {
+                state = STATE_NORMAL;
+                *active = !(*active);
+            }
+            else state = STATE_FOCUSED;
+        }
+    }
+    //--------------------------------------------------------------------
+
+    // Draw control
+    //--------------------------------------------------------------------
+    if (state == STATE_NORMAL)
+    {
+        GuiDrawRectangle(bounds, GuiGetStyle(TOGGLE, BORDER_WIDTH), GetColor(GuiGetStyle(TOGGLE, ((*active)? BORDER_COLOR_PRESSED : (BORDER + state*3)))), GetColor(GuiGetStyle(TOGGLE, ((*active)? BASE_COLOR_PRESSED : (BASE + state*3)))));
+        CustomGuiDrawText(text, GetTextBounds(TOGGLE, bounds), TEXT_ALIGN_CENTER, GetColor(GuiGetStyle(TOGGLE, ((*active)? TEXT_COLOR_PRESSED : (TEXT + state*3)))), fontSize);
+    }
+    else
+    {
+        GuiDrawRectangle(bounds, GuiGetStyle(TOGGLE, BORDER_WIDTH), GetColor(GuiGetStyle(TOGGLE, BORDER + state*3)), GetColor(GuiGetStyle(TOGGLE, BASE + state*3)));
+        CustomGuiDrawText(text, GetTextBounds(TOGGLE, bounds), TEXT_ALIGN_CENTER, GetColor(GuiGetStyle(TOGGLE, TEXT + state*3)), fontSize);
+    }
+    if (state == STATE_FOCUSED) GuiTooltip(bounds);
+
+}
+
 
 // handle dropdown menu functionalities
 int GuiMenuDropdown(Rectangle bounds, const char *text, int *active, bool editMode)

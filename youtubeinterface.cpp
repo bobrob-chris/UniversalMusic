@@ -35,7 +35,7 @@ int UniMusic::YoutubeInterface::findSongUrl(string &name, string &artist, string
     //TODO - methodize this process so that you can repeatedly look for videos (and not just first one)
     //
     
-    string query = "q="+replaceAll(name,string(" "),("+"))+"+"+replaceAll(name,string(" "),("+"))+"+official";
+    string query = "q="+replaceAll(name,string(" "),("+"))+"+"+replaceAll(artist,string(" "),("+"))+"+official";
     string key = "key="+apiKey;
 
     //execute curl request

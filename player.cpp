@@ -116,6 +116,20 @@ void UniMusic::MusicPlayer::playSong(int index) {
     yi->openUrl(url);
 }
 
+std::vector<string> UniMusic::MusicPlayer::getAllFileNames(){
+    std::ifstream master(MASTER_FILE);
+    std::vector<string> filenames;
+    string line;
+    getline(master,line);
+    int i = 1;
+    while(getline(master,line)) {
+        //std::vector<string> parts = delimitString(line,string(STANDARD_DELIMITER));
+        filenames.push_back(line);
+    }
+    master.close();
+    return filenames;
+}
+
 
 void UniMusic::MusicPlayer::runInterface() {
     //string playlist = HIDDEN_MY_PLAYLIST_ID_2;
@@ -407,7 +421,7 @@ void UniMusic::MusicPlayer::savePlaylist(string playlistid, string filename){
 
 
 int UniMusic::MusicPlayer::savePlaylist(std::vector<string> &vec, string &filename){
-    //TODO - impelent try and accept blocks for this code
+    //TODO - implement try and accept blocks for this code
     std::ofstream output(filename);
     for (string line: vec) {
         output << line << std::endl;

@@ -69,6 +69,8 @@ class MusicPlayer {
 
         //Player Buttons to interface with Tina's setup
         void playSong(int index);
+
+        std::vector<string> getAllFileNames();
         
 
         //Runs interface from console initially, but eventually from interface Tina's making
