@@ -39,14 +39,19 @@ Rectangle PanelRec;
 
 string topDisplayText = "-----";
 
+#define MAIN_PAGE 0
+#define FILE_PAGE 1
+
+int pageId = MAIN_PAGE;
+
+
+
+
 bool FilePressed = false;
 bool EditPressed = false;
 bool ImportPressed = false;
 bool ViewPressed = false;
-int f = -1;
-int e = -1;
-int i = -1;
-int v = -1;
+
 
 //----------------------------------------------------------------------------------
 // Controls Functions Declaration
@@ -77,6 +82,8 @@ int main()
 	float toolBarY = 20;
 	float toolButtonW = 130;
 	float toolButtonH = 45;
+
+    // tool bar names
 	const char* fileFunc = "File;Save;Save As;Open;Help;Exit";
 	const char* editFunc = "Edit;Manually Change Playlist;Delete Playlist;Update Playlist";
 	const char* importFunc = "Import;Import Playlist;Import User";
@@ -96,6 +103,7 @@ int main()
 	// Scroll Panel
 	float scrollBoxY = 115;
 	float maxWidth = 400;
+
 	float contentHeight = musicHeight * m.displayList.size() + 20; // 20 for padding
 	Rectangle PanelView = { 0, 0, 0, 0 };
     Vector2 PanelScrollOffset = { 0, 0 };
@@ -108,8 +116,6 @@ int main()
 	bool PausePressed = false;
 	bool NextPressed = false;
 	bool PrevPressed = false;
-
-    // Open Menu Scroll Panel
 
 	
 	// Initialize Window
@@ -129,6 +135,8 @@ int main()
     SetTargetFPS(60);
     //--------------------------------------------------------------------------------------
 
+
+
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -145,19 +153,20 @@ int main()
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR))); 
+        ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR))); 
 
-			DrawText(topDisplayText.c_str(), leftMargin, displayTextY, displayTextFontSize, GetColor(GuiGetStyle(DEFAULT, TEXT)));
-			
-
-			// scroll panel
-            if (f == -1 && e == -1 && i == -1 && v == -1){
-                GuiScrollPanel(PanelRec, NULL, PanelContent, &PanelScrollOffset, &PanelView);
-                BeginScissorMode(PanelView.x, PanelView.y, PanelView.width, PanelView.height);
-                
-            
-
+        DrawText(topDisplayText.c_str(), leftMargin, displayTextY, displayTextFontSize, GetColor(GuiGetStyle(DEFAULT, TEXT)));
         
+        int result;			
+        switch (pageId) {
+            case MAIN_PAGE:
+                // scroll panel
+                    GuiScrollPanel(PanelRec, NULL, PanelContent, &PanelScrollOffset, &PanelView);
+                    BeginScissorMode(PanelView.x, PanelView.y, PanelView.width, PanelView.height);
+                    
+                
+
+            
                 for (int i = 0; i < m.displayList.size(); i++){
                     string songText = ReplaceString(m.displayList[i], STANDARD_DELIMITER);
 
@@ -174,6 +183,7 @@ int main()
                         temp = true;
                     }
                     GuiMusicItem(musicRec, songText.c_str(), &temp, musicFontSize);
+
                     if (temp == true && currSong != i) {
                         currSong = i;
                         Playing = false;
@@ -184,157 +194,107 @@ int main()
                         topDisplayText = "-----";
                     }
                 }
-                
-                
-                
+                    
+                    
+                    
                 EndScissorMode();
-            }
+                
+                // top bar
+                if (FilePressed) GuiLock();
+                    if (GuiMenuDropdown(Rectangle{ leftMargin, toolBarY, toolButtonW, toolButtonH }, fileFunc, &pageId, FilePressed)){
+                        FilePressed = !FilePressed;
+                    }
+                GuiUnlock();
 
-			// top bar
-			if (FilePressed) GuiLock();
-				if (GuiMenuDropdown(Rectangle{ leftMargin, toolBarY, toolButtonW, toolButtonH }, fileFunc, &f, FilePressed)){
-					FilePressed = !FilePressed;
-				}
-            GuiUnlock();
-
-			if (EditPressed) GuiLock();
-				if (GuiMenuDropdown(Rectangle{ leftMargin + toolButtonW+10, toolBarY, toolButtonW, toolButtonH }, editFunc, &e, EditPressed)){
-					EditPressed = !EditPressed;
-				}
-            GuiUnlock();
-			
-			if (ImportPressed) GuiLock();
-				if (GuiMenuDropdown(Rectangle{ leftMargin + (toolButtonW+10)*2, toolBarY, toolButtonW, toolButtonH }, importFunc, &i, ImportPressed)){
-					ImportPressed = !ImportPressed;
-				}
-            GuiUnlock();
-			
-			if (ViewPressed) GuiLock();
-				if (GuiMenuDropdown(Rectangle{ leftMargin + (toolButtonW+10)*3, toolBarY, toolButtonW, toolButtonH }, viewFunc, &v, ViewPressed)){
-					ViewPressed = !ViewPressed;
-				}
-            GuiUnlock();
-			
-			
-			// open top tool bar models
-			int result;			
-			// File
-			switch (f) {
-			  case 1:
-                result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                    "#191#Save", "Hi! This is a message!", "Nice;Cool");
-                if (result >= 0) f = -1;
-				break;
-			  case 2:
-                result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                    "#191#Save As", "Hi! This is a message!", "Nice;Cool");
-                if (result >= 0) f = -1;
-				break;
-			  case 3:
+                if (EditPressed) GuiLock();
+                    if (GuiMenuDropdown(Rectangle{ leftMargin + toolButtonW+10, toolBarY, toolButtonW, toolButtonH }, editFunc, &pageId, EditPressed)){
+                        EditPressed = !EditPressed;
+                    }
+                GuiUnlock();
+                
+                if (ImportPressed) GuiLock();
+                    if (GuiMenuDropdown(Rectangle{ leftMargin + (toolButtonW+10)*2, toolBarY, toolButtonW, toolButtonH }, importFunc, &pageId, ImportPressed)){
+                        ImportPressed = !ImportPressed;
+                    }
+                GuiUnlock();
+                
+                if (ViewPressed) GuiLock();
+                    if (GuiMenuDropdown(Rectangle{ leftMargin + (toolButtonW+10)*3, toolBarY, toolButtonW, toolButtonH }, viewFunc, &pageId, ViewPressed)){
+                        ViewPressed = !ViewPressed;
+                    }
+                GuiUnlock();
+            
+                break;
+            
+        
+                /*
+                 open menu
                 result = GuiOpenMenu(Rectangle{leftMargin, toolBarY, sWidth-90, sHeight-100}, &m);
 
                 //result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
                 //    "#191#Open", "Hi! This is a message!", "Nice;Cool");
-                if (result >= 0) f = -1;
-				break;
-			  case 4:
+                */
+
+            case FILE_PAGE:
+                /*
+                    Chris, note for later, the GuiUtility Modal is what draws the regular 
+                
+                */
                 result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                    "#191#Help", "Hi! This is a message!", "Nice;Cool");
-                if (result >= 0) f = -1;
-				break;
-			  case 5:
-				CloseWindow();
-				return 0;
-			}
-			
-			// Edit
-			switch (e) {
-			  case 1:
-                result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                    "#191#Manually Change Playlist", "Hi! This is a message!", "Nice;Cool");
-                if (result >= 0) e = -1;
-				break;
-			  case 2:
-                result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                    "#191#Delete Playlist", "Hi! This is a message!", "Nice;Cool");
-                if (result >= 0) e = -1;
-				break;
-			  case 3:
-                result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                    "#191#Update Playlist", "Hi! This is a message!", "Nice;Cool");
-                if (result >= 0) e = -1;
-				break;
-			}
-			
-			// Import
-			switch (i) {
-			  case 1:
-                result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                    "#191#Import Playlist", "Hi! This is a message!", "Nice;Cool");
-                if (result >= 0) i = -1;
-				break;
-			  case 2:
-                result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                    "#191#Import User", "Hi! This is a message!", "Nice;Cool");
-                if (result >= 0) i = -1;
-				break;
-			}
-			
-			// View
-			switch (v) {
-			  case 1:
-                result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                    "#191#User Info", "Hi! This is a message!", "Nice;Cool");
-                if (result >= 0) v = -1;
-				break;
-			  case 2:
-                result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                    "#191#Config", "Hi! This is a message!", "Nice;Cool");
-                if (result >= 0) v = -1;
-				break;
-			}
-			
-			// bottom buttons
-			if (GuiButton(Rectangle{ screenCenterX-100, sHeight-70, 50, 50 }, GuiIconText(ICON_PLAYER_PREVIOUS, ""))) PrevPressed = true;
-			if (PrevPressed) {
-				if (currSong > 0 && Playing) {
-					currSong -= 1;
-					UpdateSongArtist(currSong, m.displayList);
-                    m.playSong(currSong);
-					string first = "Now Playing: ";
-					topDisplayText = first + topDisplayText;
-				}
-				PrevPressed = false;
-			};
-			if (GuiButton(Rectangle{ screenCenterX-50, sHeight-70, 50, 50 }, GuiIconText(ICON_PLAYER_PLAY, ""))) PlayPressed = true;
-			if (PlayPressed) {
-				if (!Playing && currSong != -1) {
-					string first = "Now Playing: ";
-                    m.playSong(currSong);
-					topDisplayText = first + topDisplayText;
-					Playing = true;
-				}
-				PlayPressed = false;
-			};
-			if (GuiButton(Rectangle{ screenCenterX, sHeight-70, 50, 50 }, GuiIconText(ICON_PLAYER_PAUSE, ""))) PausePressed = true;
-			if (PausePressed) {
-				if (Playing) {
-					topDisplayText = topDisplayText.substr(13);
-					Playing = false;
-				}
-				PausePressed = false;
-			};
-			if (GuiButton(Rectangle{ screenCenterX+50, sHeight-70, 50, 50 }, GuiIconText(ICON_PLAYER_NEXT, ""))) NextPressed = true;
-			if (NextPressed) {
-				if (Playing && currSong < m.displayList.size()-1) {
-					currSong += 1;
-					UpdateSongArtist(currSong, m.displayList);
-                    m.playSong(currSong);
-					string first = "Now Playing: ";
-					topDisplayText = first + topDisplayText;
-				}
-				NextPressed = false;
-			};
+                    "#191#Save", "Hi! This is a message!", "Nice;Cool");
+                if (result >= 0) pageId = MAIN_PAGE;
+                break;
+           
+            default:
+                    CloseWindow();
+                    return 0;
+            
+            
+        }
+            
+        // bottom buttons
+        if (GuiButton(Rectangle{ screenCenterX-100, sHeight-70, 50, 50 }, GuiIconText(ICON_PLAYER_PREVIOUS, ""))) PrevPressed = true;
+        if (PrevPressed) {
+            if (currSong > 0 && Playing) {
+                currSong -= 1;
+                UpdateSongArtist(currSong, m.displayList);
+                m.playSong(currSong);
+                string first = "Now Playing: ";
+                topDisplayText = first + topDisplayText;
+            }
+            PrevPressed = false;
+        };
+        
+        if (GuiButton(Rectangle{ screenCenterX-50, sHeight-70, 50, 50 }, GuiIconText(ICON_PLAYER_PLAY, ""))) PlayPressed = true;
+        if (PlayPressed) {
+            if (!Playing && currSong != -1) {
+                string first = "Now Playing: ";
+                m.playSong(currSong);
+                topDisplayText = first + topDisplayText;
+                Playing = true;
+            }
+            PlayPressed = false;
+        };
+        if (GuiButton(Rectangle{ screenCenterX, sHeight-70, 50, 50 }, GuiIconText(ICON_PLAYER_PAUSE, ""))) PausePressed = true;
+        if (PausePressed) {
+            if (Playing) {
+                topDisplayText = topDisplayText.substr(13);
+                Playing = false;
+            }
+            PausePressed = false;
+        };
+        if (GuiButton(Rectangle{ screenCenterX+50, sHeight-70, 50, 50 }, GuiIconText(ICON_PLAYER_NEXT, ""))) NextPressed = true;
+        if (NextPressed) {
+            if (Playing && currSong < m.displayList.size()-1) {
+                currSong += 1;
+                UpdateSongArtist(currSong, m.displayList);
+                m.playSong(currSong);
+                string first = "Now Playing: ";
+                topDisplayText = first + topDisplayText;
+            }
+            NextPressed = false;
+        };
+        
 		
         EndDrawing();
         //----------------------------------------------------------------------------------
@@ -347,9 +307,6 @@ int main()
     m.close();
     return 0;
 }
-
-
-
 
 
 //------------------------------------------------------------------------------------
@@ -573,7 +530,7 @@ void GuiMusicItem(Rectangle bounds, const char *text, bool *active, int fontSize
 
         // Check toggle button state
         if (CheckCollisionPointRec(mousePoint, bounds) && !FilePressed && !EditPressed && !ImportPressed && !ViewPressed
-			&& f == -1 && e == -1 && i == -1 && v == -1)
+			&& pageId == MAIN_PAGE)
         {
             if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) state = STATE_PRESSED;
             else if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
@@ -619,7 +576,7 @@ void GuiFileItem(Rectangle bounds, const char *text, bool *active, int fontSize)
 
         // Check toggle button state
         if (CheckCollisionPointRec(mousePoint, bounds) && !FilePressed && !EditPressed && !ImportPressed && !ViewPressed
-			&& f == -1 && e == -1 && i == -1 && v == -1)
+			&& pageId == MAIN_PAGE)
         {
             if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) state = STATE_PRESSED;
             else if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
@@ -726,7 +683,7 @@ int GuiMenuDropdown(Rectangle bounds, const char *text, int *active, bool editMo
         }
         else
         {
-            if (CheckCollisionPointRec(mousePoint, bounds) && f == -1 && e == -1 && i == -1 && v == -1)
+            if (CheckCollisionPointRec(mousePoint, bounds) && pageId == MAIN_PAGE)
             {
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
                 {
