@@ -40,7 +40,36 @@ Rectangle PanelRec;
 string topDisplayText = "-----";
 
 #define MAIN_PAGE 0
-#define FILE_PAGE 1
+
+#define SAVE_PAGE 1
+#define SAVE_AS_PAGE 2
+#define OPEN_PAGE 3
+#define HELP_PAGE 4
+#define EXIT_PAGE 5
+
+#define MANUALLY_CHANGE_PLAYLIST_PAGE 6
+#define DELETE_PLAYLIST_PAGE 7
+#define UPDATE_PLAYLIST_PAGE 8
+
+#define IMPORT_PLAYLIST_PAGE 9
+#define IMPORT_USER_PAGE 10
+
+#define USER_INFO_PAGE 11
+#define CONFIG_PAGE 12
+
+const char* fileFunc = "File;Save;Save As;Open;Help;Exit";
+int fileOptions[5] = { SAVE_PAGE, SAVE_AS_PAGE, OPEN_PAGE, HELP_PAGE, EXIT_PAGE};
+
+const char* editFunc = "Edit;Manually Change Playlist;Delete Playlist;Update Playlist";
+int editOptions[3] = { MANUALLY_CHANGE_PLAYLIST_PAGE, DELETE_PLAYLIST_PAGE, UPDATE_PLAYLIST_PAGE};
+
+const char* importFunc = "Import;Import Playlist;Import User";
+int importOptions[2] = { IMPORT_PLAYLIST_PAGE, IMPORT_USER_PAGE};
+
+const char* viewFunc = "View;User Info;Config";
+int viewOptions[2] = { USER_INFO_PAGE, CONFIG_PAGE};
+
+
 
 int pageId = MAIN_PAGE;
 
@@ -84,10 +113,7 @@ int main()
 	float toolButtonH = 45;
 
     // tool bar names
-	const char* fileFunc = "File;Save;Save As;Open;Help;Exit";
-	const char* editFunc = "Edit;Manually Change Playlist;Delete Playlist;Update Playlist";
-	const char* importFunc = "Import;Import Playlist;Import User";
-	const char* viewFunc = "View;User Info;Config";
+	
 	
 	// Now Playing Text
 	int displayTextFontSize = 23;
@@ -182,7 +208,7 @@ int main()
                     if (currSong == i) {
                         temp = true;
                     }
-                    GuiMusicItem(musicRec, songText.c_str(), &temp, musicFontSize);
+                    GuiScrollItem(musicRec, songText.c_str(), &temp, musicFontSize);
 
                     if (temp == true && currSong != i) {
                         currSong = i;
@@ -201,54 +227,50 @@ int main()
                 
                 // top bar
                 if (FilePressed) GuiLock();
-                    if (GuiMenuDropdown(Rectangle{ leftMargin, toolBarY, toolButtonW, toolButtonH }, fileFunc, &pageId, FilePressed)){
+                    if (GuiMenuDropdown(Rectangle{ leftMargin, toolBarY, toolButtonW, toolButtonH }, fileFunc, fileOptions, FilePressed)){
                         FilePressed = !FilePressed;
                     }
                 GuiUnlock();
 
+                
                 if (EditPressed) GuiLock();
-                    if (GuiMenuDropdown(Rectangle{ leftMargin + toolButtonW+10, toolBarY, toolButtonW, toolButtonH }, editFunc, &pageId, EditPressed)){
+                    if (GuiMenuDropdown(Rectangle{ leftMargin + toolButtonW+10, toolBarY, toolButtonW, toolButtonH }, editFunc, editOptions, EditPressed)){
                         EditPressed = !EditPressed;
                     }
                 GuiUnlock();
                 
                 if (ImportPressed) GuiLock();
-                    if (GuiMenuDropdown(Rectangle{ leftMargin + (toolButtonW+10)*2, toolBarY, toolButtonW, toolButtonH }, importFunc, &pageId, ImportPressed)){
+                    if (GuiMenuDropdown(Rectangle{ leftMargin + (toolButtonW+10)*2, toolBarY, toolButtonW, toolButtonH }, importFunc, importOptions, ImportPressed)){
                         ImportPressed = !ImportPressed;
                     }
                 GuiUnlock();
                 
                 if (ViewPressed) GuiLock();
-                    if (GuiMenuDropdown(Rectangle{ leftMargin + (toolButtonW+10)*3, toolBarY, toolButtonW, toolButtonH }, viewFunc, &pageId, ViewPressed)){
+                    if (GuiMenuDropdown(Rectangle{ leftMargin + (toolButtonW+10)*3, toolBarY, toolButtonW, toolButtonH }, viewFunc, viewOptions, ViewPressed)){
                         ViewPressed = !ViewPressed;
                     }
                 GuiUnlock();
-            
                 break;
-            
-        
-                /*
-                 open menu
-                result = GuiOpenMenu(Rectangle{leftMargin, toolBarY, sWidth-90, sHeight-100}, &m);
-
-                //result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
-                //    "#191#Open", "Hi! This is a message!", "Nice;Cool");
-                */
-
-            case FILE_PAGE:
-                /*
-                    Chris, note for later, the GuiUtility Modal is what draws the regular 
                 
-                */
+            case SAVE_PAGE:
+                
                 result = GuiUtilityModal(Rectangle{ leftMargin, toolBarY, sWidth-90, sHeight-100 },
                     "#191#Save", "Hi! This is a message!", "Nice;Cool");
+
                 if (result >= 0) pageId = MAIN_PAGE;
                 break;
            
+            case OPEN_PAGE:
+                result = GuiOpenMenu(Rectangle{leftMargin, toolBarY, sWidth-90, sHeight-100}, &m);
+                if (result >= 0) pageId = MAIN_PAGE;
+                break;
+
             default:
                     CloseWindow();
                     return 0;
             
+           
+
             
         }
             
@@ -356,6 +378,7 @@ int GuiOpenMenu(Rectangle bounds, UniMusic::MusicPlayer *m){
 
     int result = -1;    // Returns clicked button from buttons list, 0 refers to closed window button
 
+    /*
     int buttonCount = 0;
     const char **buttonsText = GuiTextSplit(buttons, ';', &buttonCount, NULL);
     Rectangle buttonBounds = { 0 };
@@ -371,11 +394,12 @@ int GuiOpenMenu(Rectangle bounds, UniMusic::MusicPlayer *m){
     textBounds.y = bounds.y + RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT + RAYGUI_MESSAGEBOX_BUTTON_PADDING;
     textBounds.width = bounds.width - RAYGUI_MESSAGEBOX_BUTTON_PADDING*2;
     textBounds.height = bounds.height - RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT - 3*RAYGUI_MESSAGEBOX_BUTTON_PADDING - RAYGUI_MESSAGEBOX_BUTTON_HEIGHT;
-
+    */
     // Draw control
     //--------------------------------------------------------------------
-    if (GuiWindowBox(bounds, title)) result = 0;
+    //if (GuiWindowBox(bounds, title)) result = 0;
 
+    result = -1;
     int prevTextAlignment = GuiGetStyle(LABEL, TEXT_ALIGNMENT);
     
     //GuiSetStyle(LABEL, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
@@ -418,16 +442,17 @@ int GuiOpenMenu(Rectangle bounds, UniMusic::MusicPlayer *m){
         if (fileWidth > maxWidth) maxWidth = fileWidth + 10;
         Rectangle fileRec = { bounds.x + FilePanelScrollOffset.x, bounds.y + FilePanelScrollOffset.y + (FileIconHeight*i), FilePanelContent.width, contentHeight};
         bool temp = false;
-        if (curFileIndex == i) {
-            temp = true;
-        }
+        //if (curFileIndex == i) {
+        //    temp = true;
+        //}
 
         string fileName = fileText.substr(fileText.find(',')+1);
-        cout << fileName << endl;
 
-        GuiFileItem(fileRec, fileText.c_str(), &temp, fileFontSize);
+        GuiScrollItem(fileRec, "hello", &temp, fileFontSize);
         if (temp == true && curFileIndex!= i) {
             curFileIndex = i;
+            cout << fileName << endl;
+
             
         } else if (temp == false && curFileIndex== i) {
             curFileIndex  = -1;
@@ -441,7 +466,7 @@ int GuiOpenMenu(Rectangle bounds, UniMusic::MusicPlayer *m){
 
 
     
-    
+    /*
     GuiSetStyle(LABEL, TEXT_ALIGNMENT, prevTextAlignment);
 
     prevTextAlignment = GuiGetStyle(BUTTON, TEXT_ALIGNMENT);
@@ -455,7 +480,7 @@ int GuiOpenMenu(Rectangle bounds, UniMusic::MusicPlayer *m){
 
     GuiSetStyle(BUTTON, TEXT_ALIGNMENT, prevTextAlignment);
     //--------------------------------------------------------------------
-
+    */
     return result;
 }
 
@@ -514,7 +539,7 @@ int GuiUtilityModal(Rectangle bounds, const char *title, const char *message, co
 
 
 // Music Item control, returns true when clicked
-void GuiMusicItem(Rectangle bounds, const char *text, bool *active, int fontSize)
+void GuiScrollItem(Rectangle bounds, const char *text, bool *active, int fontSize)
 {
     GuiState state = guiState;
 
@@ -559,61 +584,16 @@ void GuiMusicItem(Rectangle bounds, const char *text, bool *active, int fontSize
 
 }
 
-// File Item control, returns true when clicked
-void GuiFileItem(Rectangle bounds, const char *text, bool *active, int fontSize)
-{
-    GuiState state = guiState;
-
-    bool temp = false;
-    if (active == NULL) active = &temp;
-
-    // Update control
-    //--------------------------------------------------------------------
-    if ((PanelRec.y < bounds.y + bounds.height/2) && (bounds.y + bounds.height/2 < PanelRec.y + PanelRec.height)
-		&& (state != STATE_DISABLED) && !guiLocked && !guiControlExclusiveMode)
-    {
-        Vector2 mousePoint = GetMousePosition();
-
-        // Check toggle button state
-        if (CheckCollisionPointRec(mousePoint, bounds) && !FilePressed && !EditPressed && !ImportPressed && !ViewPressed
-			&& pageId == MAIN_PAGE)
-        {
-            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) state = STATE_PRESSED;
-            else if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
-            {
-                state = STATE_NORMAL;
-                *active = !(*active);
-            }
-            else state = STATE_FOCUSED;
-        }
-    }
-    //--------------------------------------------------------------------
-
-    // Draw control
-    //--------------------------------------------------------------------
-    if (state == STATE_NORMAL)
-    {
-        GuiDrawRectangle(bounds, GuiGetStyle(TOGGLE, BORDER_WIDTH), GetColor(GuiGetStyle(TOGGLE, ((*active)? BORDER_COLOR_PRESSED : (BORDER + state*3)))), GetColor(GuiGetStyle(TOGGLE, ((*active)? BASE_COLOR_PRESSED : (BASE + state*3)))));
-        CustomGuiDrawText(text, GetTextBounds(TOGGLE, bounds), TEXT_ALIGN_CENTER, GetColor(GuiGetStyle(TOGGLE, ((*active)? TEXT_COLOR_PRESSED : (TEXT + state*3)))), fontSize);
-    }
-    else
-    {
-        GuiDrawRectangle(bounds, GuiGetStyle(TOGGLE, BORDER_WIDTH), GetColor(GuiGetStyle(TOGGLE, BORDER + state*3)), GetColor(GuiGetStyle(TOGGLE, BASE + state*3)));
-        CustomGuiDrawText(text, GetTextBounds(TOGGLE, bounds), TEXT_ALIGN_CENTER, GetColor(GuiGetStyle(TOGGLE, TEXT + state*3)), fontSize);
-    }
-    if (state == STATE_FOCUSED) GuiTooltip(bounds);
-
-}
 
 
 // handle dropdown menu functionalities
-int GuiMenuDropdown(Rectangle bounds, const char *text, int *active, bool editMode)
+int GuiMenuDropdown(Rectangle bounds, const char *text, int active[], bool editMode)
 {
     int result = 0;
     GuiState state = guiState;
 
-    int temp = 0;
-    if (active == NULL) active = &temp;
+    static int itemSelected = 0;
+    
 	
     int direction = 0; // Dropdown box open direction: down (default)
     if (GuiGetStyle(DROPDOWNBOX, DROPDOWN_ROLL_UP) == 1) direction = 1; // Up
@@ -622,7 +602,6 @@ int GuiMenuDropdown(Rectangle bounds, const char *text, int *active, bool editMo
     int itemCount = 0;
     const char **items = GuiTextSplit(text, ';', &itemCount, NULL);
 
-    int itemSelected = *active;
     int itemFocused = -1;
 	int newWidth = bounds.width;
 	// make box larger if necessary
@@ -673,6 +652,7 @@ int GuiMenuDropdown(Rectangle bounds, const char *text, int *active, bool editMo
                     if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
                     {
                         itemSelected = i;
+                        pageId = active[i-1];
                         result = 1;         // Item selected
                     }
                     break;
